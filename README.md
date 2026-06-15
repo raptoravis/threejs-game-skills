@@ -4,6 +4,17 @@ Self-contained Codex and Claude Code skills for building playable, polished Thre
 
 The package includes the runtime materials agents need: `SKILL.md` files, references, checklists, prompt templates, helper scripts, and a Vite + TypeScript + Three.js scaffold bundled inside the relevant skill folders.
 
+Created by [Majid Manzarpour](https://x.com/majidmanzarpour).
+
+## Demos
+
+| Game | Video | Play |
+| --- | --- | --- |
+| Neon Ridge Drift | [Watch on X](https://x.com/majidmanzarpour/status/2064565389036540327) | [ridgedrift.netlify.app](https://ridgedrift.netlify.app) |
+| Championship Snooker Arena | [Watch on X](https://x.com/majidmanzarpour/status/2064673249129071096) | [snookerarena.netlify.app](https://snookerarena.netlify.app) |
+| Starship Dogfight | [Watch on X](https://x.com/majidmanzarpour/status/2065065340510281888) | [starshipdogfight.netlify.app](https://starshipdogfight.netlify.app) |
+| Tide Singer | [Watch on X](https://x.com/majidmanzarpour/status/2065570428723007555) | [tidesinger.netlify.app](https://tidesinger.netlify.app) |
+
 ## Install
 
 Install all skills for Codex:
