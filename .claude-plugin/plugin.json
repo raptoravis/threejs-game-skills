@@ -17,6 +17,5 @@
     "game-design",
     "webgl"
   ],
-  "skills": "../skills",
-  "mcpServers": "./.mcp.json"
+  "mcpServers": "./plugins/.mcp.json"
 }

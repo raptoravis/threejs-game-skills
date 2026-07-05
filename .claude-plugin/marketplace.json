@@ -25,7 +25,7 @@
         "game-design",
         "webgl"
       ],
-      "source": "./plugins"
+      "source": "."
     }
   ]
 }
