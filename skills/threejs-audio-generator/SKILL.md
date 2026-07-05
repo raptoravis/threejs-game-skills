@@ -34,13 +34,11 @@ Never store API keys in skill files or browser/game code. The script checks:
 Before declaring the key unavailable in a `threejs-game-director` workflow, run the director credential probe and paste its literal SET/MISSING output:
 
 ```bash
-bash ~/.codex/skills/threejs-game-director/scripts/probe_asset_credentials.sh
-```
-
-For Claude installs:
-
-```bash
+# Claude Code
 bash ~/.claude/skills/threejs-game-director/scripts/probe_asset_credentials.sh
+
+# Codex / OpenCode
+bash ~/.codex/skills/threejs-game-director/scripts/probe_asset_credentials.sh
 ```
 
 If the probe says `ELEVENLABS_API_KEY=SET` but the script sees no key, run through a shell that sources the user's profile:
@@ -60,13 +58,11 @@ Track it in the reference ledger. Do not mark the audio phase complete while thi
 Run from the user's current game project directory:
 
 ```bash
-python3 ~/.codex/skills/threejs-audio-generator/scripts/threejs_audio_asset.py --help
-```
-
-Claude install path:
-
-```bash
+# Claude Code
 python3 ~/.claude/skills/threejs-audio-generator/scripts/threejs_audio_asset.py --help
+
+# Codex / OpenCode
+python3 ~/.codex/skills/threejs-audio-generator/scripts/threejs_audio_asset.py --help
 ```
 
 Probe:

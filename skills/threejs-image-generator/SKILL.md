@@ -33,13 +33,11 @@ Never store API keys in skill files or browser/game code. The script checks:
 Before declaring the key unavailable in a `threejs-game-director` or `threejs-aaa-graphics-builder` workflow, run the director credential probe and paste its literal SET/MISSING output:
 
 ```bash
-bash ~/.codex/skills/threejs-game-director/scripts/probe_asset_credentials.sh
-```
-
-For Claude installs:
-
-```bash
+# Claude Code
 bash ~/.claude/skills/threejs-game-director/scripts/probe_asset_credentials.sh
+
+# Codex / OpenCode
+bash ~/.codex/skills/threejs-game-director/scripts/probe_asset_credentials.sh
 ```
 
 If the probe says `GEMINI_API_KEY=SET` but the script sees no key, run through a shell that sources the user's profile:
@@ -53,13 +51,11 @@ zsh -c 'source "$HOME/.zprofile" 2>/dev/null; source "$HOME/.zshrc" 2>/dev/null;
 Run from the user's current project directory so output lands in the game project:
 
 ```bash
-uv run ~/.codex/skills/threejs-image-generator/scripts/generate_image.py --prompt "your image description" --filename assets/concepts/output.png --resolution 2K
-```
-
-Claude install path:
-
-```bash
+# Claude Code
 uv run ~/.claude/skills/threejs-image-generator/scripts/generate_image.py --prompt "your image description" --filename assets/concepts/output.png --resolution 2K
+
+# Codex / OpenCode
+uv run ~/.codex/skills/threejs-image-generator/scripts/generate_image.py --prompt "your image description" --filename assets/concepts/output.png --resolution 2K
 ```
 
 Edit an existing image:

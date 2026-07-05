@@ -1,0 +1,36 @@
+{
+  "name": "threejs-game-skills",
+  "version": "1.0.0",
+  "description": "Self-contained skills for building playable, polished Three.js browser games.",
+  "author": {
+    "name": "raptoravis",
+    "url": "https://github.com/raptoravis"
+  },
+  "homepage": "https://github.com/raptoravis/threejs-game-skills",
+  "repository": "https://github.com/raptoravis/threejs-game-skills",
+  "license": "MIT",
+  "keywords": [
+    "threejs",
+    "game-development",
+    "browser-games",
+    "3d-graphics",
+    "game-design",
+    "webgl"
+  ],
+  "skills": "../skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Three.js Game Skills",
+    "shortDescription": "Skills for building playable, polished Three.js browser games.",
+    "longDescription": "A suite of self-contained skills for building complete Three.js browser games. Includes threejs-game-director (orchestration), threejs-gameplay-systems (mechanics), threejs-aaa-graphics-builder (visuals), threejs-game-ui-designer (HUD/menus), threejs-debug-profiler, threejs-qa-release, threejs-3d-generator, threejs-image-generator, and threejs-audio-generator.",
+    "developerName": "Raptoravis",
+    "category": "Game Development",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/raptoravis/threejs-game-skills",
+    "defaultPrompt": [
+      "Use threejs-game-director to build a premium game from scratch",
+      "Use threejs-game-director to upgrade this game's visuals",
+      "Use threejs-game-director to debug and finish this game"
+    ]
+  }
+}

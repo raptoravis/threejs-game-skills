@@ -1,0 +1,22 @@
+{
+  "name": "threejs-game-skills",
+  "version": "1.0.0",
+  "description": "Self-contained skills for building playable, polished Three.js browser games.",
+  "author": {
+    "name": "raptoravis",
+    "url": "https://github.com/raptoravis"
+  },
+  "homepage": "https://github.com/raptoravis/threejs-game-skills",
+  "repository": "https://github.com/raptoravis/threejs-game-skills",
+  "license": "MIT",
+  "keywords": [
+    "threejs",
+    "game-development",
+    "browser-games",
+    "3d-graphics",
+    "game-design",
+    "webgl"
+  ],
+  "skills": "../skills/",
+  "mcpServers": "./.mcp.json"
+}

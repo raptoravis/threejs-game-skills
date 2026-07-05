@@ -109,10 +109,27 @@ install.sh 路由:
 3. 自动排除 `node_modules/`, `dist/`, `__pycache__/`, `.DS_Store` 等
 4. 写入 `.threejs-game-skills-managed` 清单文件用于后续 `--prune-managed`
 
-也可通过 `npx skills add` 远程安装：
+也可通过各 agent 的 plugin 命令或 npx 远程安装：
+
+Claude Code / Codex / OpenCode 使用 **native plugin** 安装：
 
 ```bash
-npx skills add majidmanzarpour/threejs-game-skills --skill '*' -a codex -g -y
+# Claude Code
+claude plugin marketplace add raptoravis/threejs-game-skills
+claude plugin install threejs-game-skills@threejs-game-skills
+
+# Codex
+codex plugin marketplace add raptoravis/threejs-game-skills
+codex plugin add threejs-game-skills@threejs-game-skills
+
+# OpenCode
+opencode plugin -g threejs-game-skills@git+https://github.com/raptoravis/threejs-game-skills.git
+```
+
+Reasonix 使用 npx 安装：
+
+```bash
+npx skills add raptoravis/threejs-game-skills --skill '*' -a reasonix -g -y
 ```
 
 ### 2.3 技能结构规范

@@ -18,29 +18,70 @@ Created by [Majid Manzarpour](https://x.com/majidmanzarpour).
 
 ## Install
 
-Install all skills for Codex:
+### Native plugin (推荐 — Claude Code, Codex, OpenCode)
+
+**Claude Code:**
 
 ```bash
-npx skills add majidmanzarpour/threejs-game-skills --skill '*' -a codex -g -y
+claude plugin marketplace add raptoravis/threejs-game-skills
+claude plugin install threejs-game-skills@threejs-game-skills
 ```
 
-Install all skills for Claude Code:
+安装后按提示 reload。更新：
 
 ```bash
-npx skills add majidmanzarpour/threejs-game-skills --skill '*' -a claude-code -g -y
+claude plugin update threejs-game-skills@threejs-game-skills
 ```
 
-If your installed `skills` CLI does not support the Claude Code target, install from a cloned checkout with `./install.sh --claude`.
+**Codex:**
 
-For local development from a cloned checkout:
+```bash
+codex plugin marketplace add raptoravis/threejs-game-skills
+codex plugin add threejs-game-skills@threejs-game-skills
+```
+
+安装后重启 Codex。
+
+**OpenCode:**
+
+```bash
+opencode plugin -g threejs-game-skills@git+https://github.com/raptoravis/threejs-game-skills.git
+```
+
+更新（加 `--force` 绕过 npm 缓存）：
+
+```bash
+opencode plugin -g threejs-game-skills@git+https://github.com/raptoravis/threejs-game-skills.git --force
+```
+
+或在 `opencode.json` 的 `plugin` 数组中添加：
+
+```json
+{
+  "plugin": ["threejs-game-skills@git+https://github.com/raptoravis/threejs-game-skills.git"]
+}
+```
+
+### npx install (Reasonix)
+
+Reasonix 不支持 plugin marketplace，通过 npx 安装：
+
+```bash
+npx skills add raptoravis/threejs-game-skills --skill '*' -a reasonix -g -y
+```
+
+### 本地开发安装
+
+从本地 checkout 安装到各 agent：
 
 ```bash
 ./install.sh --codex
 ./install.sh --claude
+./install.sh --opencode
 ./install.sh --all
 ```
 
-The local installer copies `skills/` into the selected agent skills directory. It skips same-named skills unless you pass `--force`, and it never removes unrelated user skills unless `--prune-managed` is explicitly requested.
+安装脚本将 `skills/` 复制到对应 agent 的 skills 目录。默认跳过同名 skill，传 `--force` 强制覆盖，不会删除其他用户 skill（除非显式传 `--prune-managed`）。
 
 ```bash
 ./install.sh --codex --force

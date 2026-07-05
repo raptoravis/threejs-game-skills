@@ -22,7 +22,7 @@ Step 0 before declaring the key unavailable:
 bash ~/.claude/skills/threejs-game-director/scripts/probe_asset_credentials.sh
 ```
 
-For Codex installs:
+Codex / OpenCode 路径:
 
 ```bash
 bash ~/.codex/skills/threejs-game-director/scripts/probe_asset_credentials.sh
@@ -51,12 +51,10 @@ Track required references in a reference ledger with yes/no, path, and failure r
 Run from the user's current project directory:
 
 ```bash
+# Claude Code
 python3 ~/.claude/skills/threejs-3d-generator/scripts/threejs_3d_asset.py --help
-```
 
-If installed in Codex instead of Claude, use:
-
-```bash
+# Codex / OpenCode
 python3 ~/.codex/skills/threejs-3d-generator/scripts/threejs_3d_asset.py --help
 ```
 
