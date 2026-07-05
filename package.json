@@ -1,6 +1,7 @@
 {
   "name": "threejs-game-skills",
   "version": "1.0.1",
+  "main": ".opencode/plugins/threejs-game-skills-plugin.js",
   "description": "Self-contained skills for building playable, polished Three.js browser games.",
   "repository": "https://github.com/raptoravis/threejs-game-skills",
   "license": "MIT",
