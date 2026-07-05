@@ -36,3 +36,5 @@ coverage/
 __pycache__/
 **/__pycache__/
 *.pyc
+.reasonix/
+reasonix.toml
