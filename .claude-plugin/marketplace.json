@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Plugin marketplace for the Three.js Game Skills extension.",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "plugins": [
     {
