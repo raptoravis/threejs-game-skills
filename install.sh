@@ -159,7 +159,6 @@ install_skills() {
     local dest="$target/$skill_name"
 
     if [[ -e "$dest" && "$force" != "true" ]]; then
-      echo "  Skipping existing skill: $dest"
       continue
     fi
 

@@ -144,7 +144,6 @@ function Install-SkillsFileCopy {
         $sourceNames = "$sourceNames$skillName "
         $dest = Join-Path $TargetDir $skillName
         if ((Test-Path $dest) -and (-not $Force)) {
-            Write-Host "  Skipping existing skill: $dest"
             return
         }
         Remove-Item -Recurse -Force $dest -ErrorAction SilentlyContinue

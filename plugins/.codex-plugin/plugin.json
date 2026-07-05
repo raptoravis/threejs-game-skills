@@ -1,6 +1,6 @@
 {
   "name": "threejs-game-skills",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Self-contained skills for building playable, polished Three.js browser games.",
   "author": {
     "name": "raptoravis",
@@ -17,7 +17,7 @@
     "game-design",
     "webgl"
   ],
-  "skills": "../skills",
+  "skills": "../skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Three.js Game Skills",
