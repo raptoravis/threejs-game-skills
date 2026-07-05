@@ -199,7 +199,7 @@ function Install-NativePlugin {
 if ($Claude) {
     $claudeSkills = Join-Path $homeDir ".claude\skills"
     Install-NativePlugin -AgentName "claude" -ClrName "Claude Code" -InstallBlock {
-        claude plugin marketplace add $repoSpec 2>$null
+        claude plugin marketplace remove $repoSpec 2>$null; claude plugin marketplace add $repoSpec 2>$null
         if ($Force) {
             claude plugin update $pluginSpec
             if ($LASTEXITCODE -ne 0) { claude plugin install $pluginSpec }
