@@ -127,7 +127,7 @@ const createPlugin = async () => {
             };
           }
         }
-        console.error(`[threejs-game-skills] registered ${skills.length} skills + ${Object.keys(config.command).filter(k => k.startsWith('3js-')).length} slash commands`);
+        console.log(`[threejs-game-skills] registered ${skills.length} skills + ${Object.keys(config.command).filter(k => k.startsWith('3js-')).length} slash commands`);
       } catch (e) {
         console.error('[threejs-game-skills] config hook error:', e.message);
       }
