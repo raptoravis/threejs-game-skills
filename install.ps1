@@ -227,11 +227,10 @@ if ($Codex) {
 if ($OpenCode) {
     $openCodeSkills = if ($env:XDG_CONFIG_HOME) { Join-Path $env:XDG_CONFIG_HOME "opencode\skills" } else { Join-Path $homeDir ".config\opencode\skills" }
     Install-NativePlugin -AgentName "opencode" -ClrName "OpenCode" -InstallBlock {
-        if ($Force) {
-            opencode plugin -g $openCodePluginSpec --force
-        } else {
-            opencode plugin -g $openCodePluginSpec
-        }
+        # Always use --force so the cached package is updated to latest;
+        # without it, opencode plugin -g skips the update when a cached
+        # version already exists, leaving stale plugin code in place.
+        opencode plugin -g $openCodePluginSpec --force
     } -FileCopyBlock {
         Install-SkillsFileCopy -TargetDir $openCodeSkills -Label "OpenCode"
     }

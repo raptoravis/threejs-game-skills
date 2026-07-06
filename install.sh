@@ -233,11 +233,10 @@ fi
 
 if [[ "$opencode" == "true" ]]; then
   opencode_skills="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills"
-  if [[ "$force" == "true" ]]; then
-    opencode_install_cmd="opencode plugin -g $opencode_plugin_spec --force"
-  else
-    opencode_install_cmd="opencode plugin -g $opencode_plugin_spec"
-  fi
+  # Always use --force so the cached package is updated to latest;
+  # without it, opencode plugin -g skips the update when a cached
+  # version already exists, leaving stale plugin code in place.
+  opencode_install_cmd="opencode plugin -g $opencode_plugin_spec --force"
   install_via_plugin "opencode" "OpenCode" "$opencode_skills" "$opencode_install_cmd"
 fi
 
