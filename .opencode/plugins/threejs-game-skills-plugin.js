@@ -41,7 +41,7 @@ function getBootstrapContent() {
       }
       instructionsBody = lines.slice(start).join('\n').trim();
     } catch (e) {
-      console.error('[threejs-game-skills] failed to read instructions file:', e.message);
+      console.warn('[threejs-game-skills] failed to read instructions file:', e.message);
     }
   }
 
@@ -135,7 +135,7 @@ const createPlugin = async () => {
             };
           }
         }
-        console.error(`[threejs-game-skills] registered ${skills.length} skills + ${Object.keys(config.command).filter(k => k.startsWith('threejs-')).length} slash commands`);
+        console.log(`[threejs-game-skills] registered ${skills.length} skills + ${Object.keys(config.command).filter(k => k.startsWith('threejs-')).length} slash commands`);
       } catch (e) {
         console.error('[threejs-game-skills] config hook error:', e.message);
       }
