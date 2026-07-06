@@ -6,5 +6,5 @@
   "skills": {
     "paths": ["plugins/skills"]
   },
-  "commands": {}
+  "command": {}
 }
