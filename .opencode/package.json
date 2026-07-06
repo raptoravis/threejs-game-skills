@@ -1,0 +1,22 @@
+{
+  "name": "threejs-game-skills-opencode",
+  "version": "1.0.4",
+  "description": "Three.js Game Skills plugin for OpenCode",
+  "type": "module",
+  "main": "plugins/threejs-game-skills-plugin.js",
+  "exports": {
+    ".": "./plugins/threejs-game-skills-plugin.js"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.17.12"
+  },
+  "keywords": [
+    "opencode",
+    "plugin",
+    "threejs",
+    "game-development",
+    "skills"
+  ],
+  "author": "raptoravis",
+  "license": "MIT"
+}
