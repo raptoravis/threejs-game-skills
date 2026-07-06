@@ -57,7 +57,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sourceDir = Join-Path $scriptDir "skills"
+$sourceDir = Join-Path $scriptDir "plugins/skills"
 
 if ($All) {
     $Claude = $true

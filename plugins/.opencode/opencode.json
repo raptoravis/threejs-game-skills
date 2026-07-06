@@ -1,8 +1,23 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["./plugins"],
+  "skills": {
+    "paths": ["../skills"]
+  },
   "instructions": [
     "AGENTS.md"
   ],
-  "command": {}
+  "commands": {
+    "build-game": {
+      "description": "Build a complete Three.js game using the game director",
+      "prompt": "Use threejs-game-director to build a premium game from scratch"
+    },
+    "upgrade-graphics": {
+      "description": "Upgrade game visuals to premium/AAA quality",
+      "prompt": "Use threejs-game-director to upgrade this game's visuals"
+    },
+    "debug-finish": {
+      "description": "Debug and finish a Three.js game",
+      "prompt": "Use threejs-game-director to debug and finish this game"
+    }
+  }
 }

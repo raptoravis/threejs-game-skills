@@ -8,7 +8,7 @@ if [[ ! -f "$validator" ]]; then
   exit 1
 fi
 
-source_dir="${1:-skills}"
+source_dir="${1:-plugins/skills}"
 
 if [[ ! -d "$source_dir" ]]; then
   echo "Skills directory not found: $source_dir" >&2

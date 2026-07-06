@@ -18,6 +18,7 @@
     "webgl"
   ],
   "mcpServers": "./.mcp.json",
+  "skills": "./skills",
   "interface": {
     "displayName": "Three.js Game Skills",
     "shortDescription": "Skills for building playable, polished Three.js browser games.",
