@@ -225,7 +225,7 @@ fi
 
 if [[ "$codex" == "true" ]]; then
   codex_skills="${CODEX_HOME:-$HOME/.codex}/skills"
-  codex_install_cmd="codex plugin marketplace add $repo_spec 2>/dev/null; codex plugin add $plugin_spec"
+  codex_install_cmd="codex plugin marketplace add $repo_spec 2>/dev/null; codex plugin add threejs-game-skills@$repo_spec"
   install_via_plugin "codex" "Codex" "$codex_skills" "$codex_install_cmd"
 fi
 
