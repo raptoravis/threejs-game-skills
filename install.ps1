@@ -216,7 +216,7 @@ if ($Codex) {
     $codexSkills = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME "skills" } else { Join-Path $homeDir ".codex\skills" }
     Install-NativePlugin -AgentName "codex" -ClrName "Codex" -InstallBlock {
         codex plugin marketplace add $repoSpec 2>$null
-        codex plugin add "threejs-game-skills@$repoSpec"
+        codex plugin add "threejs-game-skills@threejs-game-skills"
     } -FileCopyBlock {
         Install-SkillsFileCopy -TargetDir $codexSkills -Label "Codex"
     }
