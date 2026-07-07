@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "main": ".opencode/plugins/threejs-game-skills-plugin.js",
   "exports": {
+    ".": ".opencode/plugins/threejs-game-skills-plugin.js",
     "./server": ".opencode/plugins/threejs-game-skills-plugin.js"
   },
   "description": "Self-contained skills for building playable, polished Three.js browser games.",

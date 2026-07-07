@@ -5,7 +5,8 @@
   "type": "module",
   "main": "plugins/threejs-game-skills-plugin.js",
   "exports": {
-    ".": "./plugins/threejs-game-skills-plugin.js"
+    ".": "./plugins/threejs-game-skills-plugin.js",
+    "./server": "./plugins/threejs-game-skills-plugin.js"
   },
   "dependencies": {
     "@opencode-ai/plugin": "1.17.12"

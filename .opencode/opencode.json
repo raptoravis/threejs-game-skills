@@ -1,10 +1,23 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "plugins/AGENTS.md"
-  ],
   "skills": {
-    "paths": ["plugins/skills"]
+    "paths": ["../plugins/skills"]
   },
-  "command": {}
+  "instructions": [
+    "../plugins/AGENTS.md"
+  ],
+  "command": {
+    "build-game": {
+      "template": "Use threejs-game-director to build a premium game from scratch.\nFollow the director's phase OS: scaffold, implement gameplay loop, add visuals, design UI, debug, QA, and release.\n\n$ARGUMENTS",
+      "description": "Build a complete Three.js game using the game director"
+    },
+    "upgrade-graphics": {
+      "template": "Use threejs-game-director to upgrade this game's visuals to premium/AAA quality.\nLoad threejs-aaa-graphics-builder for visual upgrade workflows, materials, post-processing, and the visual scorecard.\n\n$ARGUMENTS",
+      "description": "Upgrade game visuals to premium/AAA quality"
+    },
+    "debug-finish": {
+      "template": "Use threejs-game-director to debug and finish this game.\nLoad threejs-debug-profiler and threejs-qa-release for debugging, profiling, and release readiness.\n\n$ARGUMENTS",
+      "description": "Debug and finish a Three.js game"
+    }
+  }
 }

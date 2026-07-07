@@ -4,20 +4,20 @@
     "paths": ["../skills"]
   },
   "instructions": [
-    "AGENTS.md"
+    "../AGENTS.md"
   ],
-  "commands": {
+  "command": {
     "build-game": {
-      "description": "Build a complete Three.js game using the game director",
-      "prompt": "Use threejs-game-director to build a premium game from scratch"
+      "template": "Use threejs-game-director to build a premium game from scratch.\nFollow the director's phase OS: scaffold, implement gameplay loop, add visuals, design UI, debug, QA, and release.\n\n$ARGUMENTS",
+      "description": "Build a complete Three.js game using the game director"
     },
     "upgrade-graphics": {
-      "description": "Upgrade game visuals to premium/AAA quality",
-      "prompt": "Use threejs-game-director to upgrade this game's visuals"
+      "template": "Use threejs-game-director to upgrade this game's visuals to premium/AAA quality.\nLoad threejs-aaa-graphics-builder for visual upgrade workflows, materials, post-processing, and the visual scorecard.\n\n$ARGUMENTS",
+      "description": "Upgrade game visuals to premium/AAA quality"
     },
     "debug-finish": {
-      "description": "Debug and finish a Three.js game",
-      "prompt": "Use threejs-game-director to debug and finish this game"
+      "template": "Use threejs-game-director to debug and finish this game.\nLoad threejs-debug-profiler and threejs-qa-release for debugging, profiling, and release readiness.\n\n$ARGUMENTS",
+      "description": "Debug and finish a Three.js game"
     }
   }
 }
