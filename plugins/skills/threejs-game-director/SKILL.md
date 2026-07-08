@@ -108,6 +108,19 @@ Required phase references:
 - Physics selection, when physics/collision-heavy gameplay is in scope: `threejs-gameplay-systems/references/physics-engine-selection.md`
 - New game completion checklist, when creating a game or first playable slice: `threejs-gameplay-systems/references/checklists/new-game-definition-of-done.md`
 - Endless runner checklist, when building or upgrading an endless runner: `threejs-gameplay-systems/references/checklists/endless-runner-premium-quality.md`
+- FPS checklist, when building or upgrading an FPS: `threejs-gameplay-systems/references/checklists/fps-premium-quality.md`
+- RTS checklist, when building or upgrading an RTS: `threejs-gameplay-systems/references/checklists/rts-premium-quality.md`
+- Racing checklist, when building or upgrading a racing game: `threejs-gameplay-systems/references/checklists/racing-premium-quality.md`
+- Third-person action checklist, when building or upgrading a third-person action game: `threejs-gameplay-systems/references/checklists/third-person-action-premium-quality.md`
+- 3D platformer checklist, when building or upgrading a 3D platformer: `threejs-gameplay-systems/references/checklists/platformer-3d-premium-quality.md`
+- RPG/action-RPG checklist, when building or upgrading an RPG or action-RPG: `threejs-gameplay-systems/references/checklists/rpg-action-premium-quality.md`
+- Survival/crafting checklist, when building or upgrading a survival or crafting game: `threejs-gameplay-systems/references/checklists/survival-crafting-premium-quality.md`
+- Physics puzzle checklist, when building or upgrading a physics puzzle game: `threejs-gameplay-systems/references/checklists/physics-puzzle-premium-quality.md`
+- Flight combat checklist, when building or upgrading a flight combat game: `threejs-gameplay-systems/references/checklists/flight-combat-premium-quality.md`
+- Tower defense checklist, when building or upgrading a tower defense game: `threejs-gameplay-systems/references/checklists/tower-defense-premium-quality.md`
+- Card game checklist, when building or upgrading a card game: `threejs-gameplay-systems/references/checklists/card-game-premium-quality.md`
+- SLG checklist, when building or upgrading an SLG or strategy simulation: `threejs-gameplay-systems/references/checklists/slg-premium-quality.md`
+- Narrative game checklist, when building or upgrading a narrative or story-driven game: `threejs-gameplay-systems/references/checklists/narrative-game-premium-quality.md`
 - AAA graphics: `threejs-aaa-graphics-builder/references/visual-scorecard.md`
 - AAA graphics: `threejs-aaa-graphics-builder/references/implementation-blueprint.md`
 - AAA graphics: `threejs-aaa-graphics-builder/references/model-recipes.md`

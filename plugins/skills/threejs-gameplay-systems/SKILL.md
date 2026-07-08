@@ -22,6 +22,19 @@ Load `references/physics-engine-selection.md` before adding or changing physics,
 Load `references/checklists/new-game-definition-of-done.md` before claiming a new game or first playable slice is complete.
 
 Load `references/checklists/endless-runner-premium-quality.md` for endless runner work.
+Load `references/checklists/fps-premium-quality.md` for FPS work.
+Load `references/checklists/rts-premium-quality.md` for RTS work.
+Load `references/checklists/racing-premium-quality.md` for racing work.
+Load `references/checklists/third-person-action-premium-quality.md` for third-person action work.
+Load `references/checklists/platformer-3d-premium-quality.md` for 3D platformer work.
+Load `references/checklists/rpg-action-premium-quality.md` for RPG or action-RPG work.
+Load `references/checklists/survival-crafting-premium-quality.md` for survival or crafting work.
+Load `references/checklists/physics-puzzle-premium-quality.md` for physics puzzle work.
+Load `references/checklists/flight-combat-premium-quality.md` for flight combat work.
+Load `references/checklists/tower-defense-premium-quality.md` for tower defense work.
+Load `references/checklists/card-game-premium-quality.md` for card game work.
+Load `references/checklists/slg-premium-quality.md` for SLG or strategy simulation work.
+Load `references/checklists/narrative-game-premium-quality.md` for narrative or story-driven game work.
 
 Load `references/prompt-templates.md` only when the user asks for reusable prompts, starter prompts, or a task template.
 
