@@ -18,6 +18,14 @@
     "debug-finish": {
       "template": "Use threejs-game-director to debug and finish this game.\nLoad threejs-debug-profiler and threejs-qa-release for debugging, profiling, and release readiness.\n\n$ARGUMENTS",
       "description": "Debug and finish a Three.js game"
+    },
+    "build-phaser-game": {
+      "template": "Use phaser-game-director to build a premium 2D game from scratch.\nFollow the director's phase OS: scaffold, implement gameplay loop, add 2D visuals, design UI, debug, QA, and release.\n\n$ARGUMENTS",
+      "description": "Build a complete Phaser 2D game using the game director"
+    },
+    "upgrade-phaser-graphics": {
+      "template": "Use phaser-game-director to upgrade this 2D game's visuals to premium quality.\nLoad phaser-2d-graphics-builder for visual upgrade workflows, sprites, tilemaps, particles, and the 2D visual scorecard.\n\n$ARGUMENTS",
+      "description": "Upgrade Phaser 2D game visuals to premium quality"
     }
   }
 }

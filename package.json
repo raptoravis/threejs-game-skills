@@ -6,13 +6,17 @@
     ".": ".opencode/plugins/threejs-game-skills-plugin.js",
     "./server": ".opencode/plugins/threejs-game-skills-plugin.js"
   },
-  "description": "Self-contained skills for building playable, polished Three.js browser games.",
+  "description": "Self-contained skills for building playable, polished Three.js 3D and Phaser 2D browser games.",
   "repository": "https://github.com/raptoravis/threejs-game-skills",
   "license": "MIT",
   "keywords": [
     "threejs",
+    "phaser",
+    "phaser3",
+    "phaser4",
     "game-development",
     "browser-games",
+    "2d-games",
     "3d-graphics",
     "game-design",
     "webgl"
@@ -41,6 +45,11 @@
     "plugins/.codex-plugin/",
     "plugins/.opencode/",
     "plugins/skills/",
+    "plugins/skills/phaser-game-director/",
+    "plugins/skills/phaser-gameplay-systems/",
+    "plugins/skills/phaser-2d-graphics-builder/",
+    "plugins/skills/phaser-debug-profiler/",
+    "plugins/skills/phaser-qa-release/",
     ".opencode/",
     "AGENTS.md",
     "CLAUDE.md"
