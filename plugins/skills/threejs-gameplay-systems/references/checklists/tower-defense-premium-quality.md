@@ -57,3 +57,15 @@
 - Game loop tested through: tower placement → early waves → economy build → mid-game defense → tower upgrades → boss wave → victory/fail.
 - Wave economy model validated: player income vs. required defense investment mapped across full campaign.
 - All tower types tested as viable primary strategy; no single tower type dominates all scenarios.
+
+## Accessibility
+- Tower range, status effects on enemies, and enemy types distinguishable by icon + silhouette, not color alone — pair slow/burn/stun colors with a glyph or outline overlay.
+- HUD text (wave counter, currency, lives, tower stats) legible; contrast meets AA on the tower panel, range rings, and wave-composition preview.
+- Reduced-motion/colorblind-friendly options where fast color cues mark incoming waves, leaks, or boss spawns.
+- Important events (wave start, leak, boss spawn, last-life) conveyed by audio + visual banner/pulse, never color alone.
+
+## Audio
+- SFX for primary feedback events: tower placement/fire, upgrade, enemy death, leak, wave-start, wave-clear, boss-spawn, and game-over — each distinct and informational.
+- Music/ambience loop clean with no audible seams across long sessions; mute/volume work and persist.
+- Audio never masks critical cues — leak warning, boss-spawn sting, and last-life alert stay audible under tower fire and music layers.
+- Wave restart and scene transition clean up audio: no dangling projectile/explosion one-shots or overlapping music stems.

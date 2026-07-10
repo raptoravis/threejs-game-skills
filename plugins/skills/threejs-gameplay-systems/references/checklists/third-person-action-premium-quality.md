@@ -60,3 +60,15 @@
 - Game loop tested through: exploration → basic combat → multi-enemy engagement → resource management → boss fight → victory/fail.
 - Input buffering and i-frame consistency tested at 30fps and 60fps.
 - Cancel hierarchy verified: dodge-cancel, block-cancel, parry-cancel windows all function per-move as documented.
+
+## Accessibility
+- Enemy attack telegraphs distinguishable by silhouette and startup pose, not color alone — windup shape, range, and arc readable for colorblind players.
+- Health/stamina state and parry/dodge window cues legible; HUD contrast meets AA on bars, lock-on indicator, and style meter.
+- Reduced-motion option for hitstop, camera shake, and parry screen-flash where motion or flash carries the impact or counter signal.
+- Subtitles/captions for any voiced dialogue and important audio cues (parry clang, boss roar, low-health, stagger-open).
+
+## Audio
+- SFX for primary combat events: light/heavy hit, parry clang, dodge, enemy stagger, and killing blow — impact sound differentiated by material and damage type.
+- Hitstop pairs with a distinct impact sound firing the same frame, so weight is both seen and heard.
+- Music/ambience loop clean; mute/volume work; audio never masks parry, dodge, or enemy-telegraph cues.
+- Combat-scene restart and transition audio cleanup: no overlapping boss stems, dangling hit one-shots, or leftover VFX audio.

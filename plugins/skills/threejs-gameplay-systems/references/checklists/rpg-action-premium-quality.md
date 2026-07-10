@@ -63,3 +63,15 @@
 - Game loop tested through: character creation → early combat → questing → level-up → gear upgrade → boss fight → zone transition.
 - Build diversity validated: at least double-digit viable endgame builds, not 3 meta builds dominating 200-node tree.
 - Loot satisfaction tested: "time to next meaningful upgrade" mapped across all equipment slots and level bands.
+
+## Accessibility
+- Status effects (bleed, burn, freeze, stun, poison) distinguishable by icon + animation, not color alone — overlay a glyph or outline so colorblind players parse active debuffs.
+- Dialogue, tooltips, and inventory stats legible; contrast meets AA at desktop and mobile text sizes, including affix delta highlights.
+- Reduced-motion option for hitstop, screen shake, and combat VFX where motion carries the hit, crit, or danger signal.
+- Subtitles/captions for voiced dialogue and important audio cues (level-up, boss roar, low-health warning, ambush stagger).
+
+## Audio
+- SFX for primary combat feedback: weapon hit, crit, ability cast, block/parry, enemy stagger, enemy death, level-up, and loot-drop beacon — each distinct and tied to a visible event.
+- Music/ambience adapts per zone and combat state; mute/volume work and loop seams are clean across biome transitions.
+- Audio never masks critical cues — low-health warning, boss telegraph, and ambush cues stay audible under combat music and ability layers.
+- Scene change, fast-travel, and restart clean up audio: no dangling ambient loops, overlapping music stems, or leftover spell one-shots.

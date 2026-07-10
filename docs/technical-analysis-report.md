@@ -276,7 +276,7 @@ description: "简短描述（≤120 字符），AI 阅读后决定是否调用"
 │  • 路径探试顺序: ../<skill>/ → ~/.claude/skills/ →          │
 │                  ~/.codex/skills/ → ~/.agents/skills/ →    │
 │                  skills/<skill>/ (repo source)              │
-│  • 失败则 fallback 到 director-phase-os.md                  │
+│  • 失败则 fallback 到 phase-playbook.md                  │
 │  • 记录技能加载账本                                         │
 └────────────────────────────────────────────────────────────┘
                            ↓
@@ -317,7 +317,7 @@ threejs-game-director/
 ├── SKILL.md                                  # 编排核心指令（~500行）
 ├── agents/openai.yaml                        # OpenAI 路由
 ├── references/
-│   ├── director-phase-os.md                  # Fallback 阶段操作系统（Phase 1-7 详解）
+│   ├── phase-playbook.md                  # Fallback 阶段操作系统（Phase 1-7 详解）
 │   └── prompt-templates.md                   # 可复用 prompt 模板
 └── scripts/
     ├── probe_asset_credentials.sh            # 凭据探测脚本
@@ -447,7 +447,7 @@ Claude-style skill runner 可能只调用 director 这一个 skill。
 此时 director 必须:
   1. 用 filesystem read 工具手动加载 sibling SKILL.md 文件
   2. 加载每个阶段的 reference 文件
-  3. 如果某个 SKILL.md 无法加载，使用 director-phase-os.md 作为 fallback
+  3. 如果某个 SKILL.md 无法加载，使用 phase-playbook.md 作为 fallback
   4. 不能声称调用了未实际加载的 skill
 ```
 
@@ -1483,7 +1483,7 @@ ambienceSource.stop();        // stop on scene teardown
 
                            ↓
 ┌──────────────────────────────────────────────────────────────────┐
-│ Step 1: Director 加载自身 SKILL.md + director-phase-os.md        │
+│ Step 1: Director 加载自身 SKILL.md + phase-playbook.md        │
 ├──────────────────────────────────────────────────────────────────┤
 │ Step 2: 尝试加载 8 个 sibling SKILL.md 文件                       │
 │   Path: ../<skill>/SKILL.md → ~/.claude/ → ~/.codex/ → skills/   │

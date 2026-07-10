@@ -85,3 +85,10 @@
 - Game loop (Roguelike): draft → route plan → combat → reward → shop/rest → boss → run complete.
 - Balance: all deck archetypes viable at competitive level; no single dominant deck above 55% win rate.
 - Economy simulation validated: F2P set-completion timeline within stated design target.
+
+### Accessibility
+- Card cost, type, and rarity distinguishable by more than color alone — pair rarity glow with frame treatment, icon shape, and cost badge so colorblind players parse the board.
+- Card text and keyword tooltips legible at desktop and phone scale; contrast meets AA on card frames, hand zone, and board lanes.
+- Colorblind-friendly rarity/keyword indicator option where color carries gameplay meaning (target validity, faction, spell school).
+- Turn-timer rope not the sole "time running out" cue — add visual pulse on the end-turn button alongside the audio tick.
+- Critical state changes (your turn, opponent turn, card played, damage dealt) conveyed via audio + visual transition, never color alone.

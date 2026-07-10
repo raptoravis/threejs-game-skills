@@ -60,3 +60,15 @@
 - Game loop tested through: deployment → movement → combat → unit promotion → base building → tech research → multi-mission campaign progress.
 - Combat preview accuracy verified: predicted damage range vs. actual outcomes within stated bounds across 100+ sample attacks.
 - AI decision quality validated: no suicide charges, no idle units during active combat phases.
+
+## Accessibility
+- Tile terrain/advantage and unit affiliation distinguishable by icon or pattern, not color alone — move/attack ranges and weapon-triangle advantage pair color with a glyph or border.
+- Damage forecast and unit stats legible; contrast meets AA on selected-unit panel, minimap, and turn-order queue at desktop and mobile sizes.
+- Reduced-motion option for combat animations and camera transitions where motion carries the hit, crit, or turn-phase signal.
+- Important cues (turn change, objective update, unit death, phase banner) conveyed by audio + visual, not audio alone.
+
+## Mobile
+- Touch covers the primary verbs: tap-to-select unit, tap-to-move/attack tile, swipe-to-pan, pinch-to-zoom the grid — no desktop-only pointer paths.
+- Grid + unit models readable at phone screen sizes; 8x6 tactical grid fits portrait without scrolling.
+- Safe-area and viewport handled — notch and rounded corners do not clip the turn-order queue, minimap, or end-turn button.
+- Touch targets >=44pt for tile selection, unit portrait tabs, and the end-turn confirm button; fat-finger mis-taps on adjacent tiles mitigated by a confirm step.

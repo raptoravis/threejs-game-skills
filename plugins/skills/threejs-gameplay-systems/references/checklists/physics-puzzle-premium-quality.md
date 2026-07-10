@@ -59,3 +59,15 @@
 ## Playtest
 - Game loop tested through: mechanic introduction → puzzle solve → failure/reset → multi-step chain → alternative solution discovery → star/par achievement → level transition.
 - Solution robustness verified: all intended and alternative solutions tested; 10+ wrong-attempt paths checked for soft-locks or confusing behavior.
+
+## Accessibility
+- Stress/load state and puzzle activation conveyed by more than color alone — pair green-yellow-red load coloring with outline thickness, icon, or hatching so colorblind players read structural risk.
+- Objective hints and ghost-placement previews legible; contrast meets AA on HUD text, range rings, and snap guides in 3D puzzle lighting.
+- Reduced-motion option for collapse, stress, and break animations where motion carries the failure or near-failure signal.
+- Snap/break/activation cues paired as audio + visual, not audio alone, so muted players still parse puzzle feedback.
+
+## Audio
+- SFX for the primary puzzle verbs: object grab, place, connection snap, break/collapse, and activation success — each a distinct, informational cue.
+- Stress/load audio rises progressively before structural failure (groaning timbre, pitch climb) so approaching collapse is hearable.
+- Ambient loop clean and non-distracting over long solve sessions; mute/volume controls work and persist.
+- Reset, undo, and level-transition audio state cleans up — no dangling collision, creak, or ambient stems across scenes.

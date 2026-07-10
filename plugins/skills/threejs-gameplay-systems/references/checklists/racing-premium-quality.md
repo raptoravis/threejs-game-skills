@@ -69,3 +69,15 @@
 ## Playtest
 - Game loop tested through: countdown → racing line learning → overtaking → mistake recovery → drift chaining → lap completion → finish.
 - Car handling differentiation validated: blind test where players identify car by feel alone.
+
+## Accessibility
+- Track surface grip changes (tarmac/dirt/curb/off-track) conveyed by more than color — particle type, rumble-strip camera/audio, and surface texture, not hue alone.
+- Speed, position, and lap state legible; HUD contrast meets AA on speedometer, minimap, and edge opponent arrows in bright and dark track lighting.
+- Reduced-motion option for camera shake, speed lines, and motion blur where motion carries the speed or impact signal.
+- Countdown start and finish-line moments conveyed by both audio beeps and a visual countdown/flag — not audio alone.
+
+## Audio
+- Primary feedback events have distinct SFX: collision/scrape, boost pickup, checkpoint pass, lap-complete, overtake, and finish — complementing the dynamic engine/tire layers.
+- Music and ambience loop clean with no audible seams; mute/volume/master-bus controls work and persist across sessions.
+- Audio never masks critical handling cues — tire slip-to-squeal and surface-change audio stay audible under music and collision layers.
+- Scene restart, garage entry, and race-to-menu transitions clean up audio: no overlapping music stems or dangling boost/collision one-shots.
