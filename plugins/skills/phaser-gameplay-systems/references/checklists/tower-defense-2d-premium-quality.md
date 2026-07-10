@@ -136,3 +136,20 @@ Tier 1: base (×1), Tier 2: 2-3× base, Tier 3: 5-8× base. Sell refund: 50-75% 
 - Speed-run test: ×4 speed full-campaign run. No frame drops, no physics desync.
 - Minimum viable defense test: what's the cheapest setup that clears each wave? Used to validate economy numbers.
 - Mobile: touch controls tested on real device. Pinch-zoom + tower placement + upgrade flow verified.
+
+## Accessibility
+- Enemy path conveyed by more than color alone: distinct tile texture, raised border, and directional arrow markers. Colorblind players must tell path from buildable terrain without relying on the green/red hover highlight.
+- Buildable/blocked grid feedback not color-only: add an icon (check/cross), border dash pattern, or reason text overlay alongside the green/red tint so placement validity is readable.
+- Tower tier and type distinguishable beyond color — silhouette change, added greebles/turrets, and particle style per tier. Don't encode tier solely via a colored ring.
+- Status effects on enemies (slow, burn/DoT, poison, stun, armor-shred) each carry a distinct icon + shape (stars, flame, cracked overlay), not just a colored tint. Colorblind players must read debuff state.
+- Range ring and tower stats legible at small screen sizes; contrast and font size meet WCAG AA. Damage numbers and wave-preview text readable on mobile.
+- Reduced-motion option dampens boss-spawn screen shake, leak flash, and particle VFX for players sensitive to repeated motion.
+- Critical audio cues (wave-start horn, boss warning, leak alarm) paired with visual equivalents (banner, screen-edge flash, minimap pulse) so defense state is never audio-only.
+
+## Audio
+- Distinct SFX per tower type and projectile identity: basic shot (crisp pop), splash cannon (boom + radius thud), slow beam (cold hum), sniper (crack), special/buff (chime), chain lightning (zap arc). Player learns the defense composition by ear.
+- Key feedback events all covered: tower placed, upgrade tier-up (escalating pitch per tier), tower sold (coin scatter), enemy death, boss hit, leak (alarm), wave-clear (jingle), game-over stinger.
+- Wave-start horn/siren and wave-clear jingle clearly audible above the music bed; boss warning cue deliberately distinct from normal wave-start so the player reacts without reading text.
+- Music/ambience loop clean and crossfaded; never masks critical cues (leak alarm, boss warning, upgrade confirm) at default volume. Intensifies as lives drop or boss waves approach.
+- Mute + separate music/SFX volume sliders work and persist. Audio never the only signal for a leak or boss spawn.
+- Restart and scene-change audio cleanup: no lingering Phaser sound, ambience, or tween-driven sources after game-over restart or map switch.

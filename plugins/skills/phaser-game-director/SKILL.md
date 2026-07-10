@@ -1,151 +1,123 @@
 ---
 name: phaser-game-director
-description: "Primary entrypoint for complete Phaser 2D browser game creation, premium iteration, and automatic phase orchestration. Use by default for build-a-2D-game, upgrade, polish, premium, high-fidelity, from-scratch, platformer, RPG, tower defense, card game, bullet hell, RTS, release-ready, or showcase requests. For broad work, first load sibling public skill files for gameplay systems, 2D graphics, UI, debug/profile, and QA/release. For premium 2D games with characters, enemies, props, backgrounds, spritesheets, logos, icons, GUI art, audio/SFX/voice needs, or less-basic graphics, load threejs-image-generator and/or threejs-audio-generator before deciding generated assets are unnecessary. Keep skill-loading, reference, asset-sourcing, and phase-execution ledgers so users do not choose skills manually."
+description: "Primary entrypoint for complete Phaser 2D browser game creation and premium iteration. Use by default for build-a-2D-game, upgrade, polish, premium, high-fidelity, showcase, from-scratch, platformer, RPG, tower defense, card game, bullet hell, RTS, narrative, release-ready, or showcase requests. Orchestrates sibling skills for gameplay, 2D graphics, UI, debug/profile, and QA/release, plus image/audio generators for characters, enemies, props, backgrounds, spritesheets, logos, icons, GUI art, and SFX/voice. Keeps skill-loading, reference, asset-sourcing, and phase ledgers so users never choose skills manually."
 ---
 
 # Phaser Game Director
 
 ## Purpose
 
-Own the end-to-end 2D game outcome. Build the playable loop, route through the right phases, verify evidence, and do not call prototype-quality work premium.
+Own the end-to-end 2D game outcome. Build the playable loop, route through the right phases, verify evidence, and do not call prototype-quality work premium. "Less basic" from the user means the current visual level is rejected: treat it as the premium bar.
 
-## Claude Compatibility Rule
+## Runner Capability Check
 
-Claude-style skill runners may invoke only this skill when the user runs `/phaser-game-director`. Do not claim other skills were invoked unless the runner actually invoked them. For broad work, you must still try to load the sibling public `SKILL.md` files with filesystem read tools before planning or editing, then load each phase's required reference files before that phase starts. If a sibling `SKILL.md` cannot be loaded, then use `references/director-phase-os.md` as the fallback for that phase and record the failure.
+Before planning, note what this runner can do and adapt:
 
-## Mandatory Sibling Skill Loading
+1. **Invoke sibling skills directly?** Usually not — the runner invokes only this skill. Load sibling `SKILL.md` files with file-read tools instead. Never claim a skill was "invoked" when it was only loaded/read.
+2. **Read files by path?** Resolve every skill and reference path through the path ladder below. If a required file cannot be read anywhere on the ladder, record the failure in the ledger and use `references/phase-playbook.md` as the fallback procedure for that phase.
+3. **Run shell commands (node + python3)?** If yes, use the packaged scripts (scaffold creator, credential probe, canvas inspector, report audit). If not, ask the user to run each command and paste the output; never fabricate script output.
+4. **Drive a browser / run Playwright?** If yes, capture screenshots and canvas inspection yourself. If not, ask the user to run `npm run verify:visual` and `npm run inspect:canvas` and paste the results; report unverified visuals as a residual risk, never as verified.
 
-For complete, premium, polished, high-fidelity, showcase, from-scratch, upgrade, or release-ready 2D game work, load these sibling skill files before implementation:
+### Skill Path Ladder
 
-- `phaser-gameplay-systems/SKILL.md`
-- `phaser-2d-graphics-builder/SKILL.md`
-- `threejs-game-ui-designer/SKILL.md`
-- `phaser-debug-profiler/SKILL.md`
-- `phaser-qa-release/SKILL.md`
+Try in order, expanding `~` to the user's home directory when the read tool requires absolute paths:
 
-For premium, high-fidelity, showcase, complete, release-ready, or "less basic" 2D game work, load this skill when the game includes or should include concept/reference images, sprite sheet art, texture references, backgrounds, logos, marks, icons, decals, GUI art, title/menu art, or 2D images for concept workflows. Do this before deciding those assets are not needed:
+1. `../<skill-name>/SKILL.md` relative to this skill's directory
+2. `~/.claude/skills/<skill-name>/SKILL.md`
+3. `~/.codex/skills/<skill-name>/SKILL.md`
+4. `~/.agents/skills/<skill-name>/SKILL.md`
+5. `plugins/skills/<skill-name>/SKILL.md` in the repository source
 
-- `threejs-image-generator/SKILL.md`
+Reference files resolve the same way: `<skill-dir>/references/<file>.md`. Sibling skills point back to this ladder instead of restating it.
 
-For premium, high-fidelity, showcase, complete, release-ready, or "less basic" 2D game work, load this skill when the game includes or should include SFX, ambience, UI sounds, interaction audio, announcer/dialogue, scratch-performance voice conversion, or audio cleanup. Do this before deciding generated audio is not needed:
+## Sibling Skill Loading
 
-- `threejs-audio-generator/SKILL.md`
+For broad work (complete, premium, polished, high-fidelity, showcase, from-scratch, upgrade, release-ready), load all five phase skills before implementation: `phaser-gameplay-systems`, `phaser-2d-graphics-builder`, `threejs-game-ui-designer`, `phaser-debug-profiler`, `phaser-qa-release`. For narrow director-invoked work, load the directly relevant sibling plus `phaser-qa-release`. Do not skip sibling loading because this director bundles a phase playbook.
 
-Try paths in this order:
+Load generator skills before deciding generated assets are unnecessary, whenever their trigger surfaces exist in premium/showcase/complete/release-ready/"less basic" 2D work:
 
-1. Sibling installed path: `../<skill-name>/SKILL.md`
-2. Claude default path: `~/.claude/skills/<skill-name>/SKILL.md`
-3. Codex default path: `~/.codex/skills/<skill-name>/SKILL.md`
-4. General agents path: `~/.agents/skills/<skill-name>/SKILL.md`
-5. Repository source path: `plugins/skills/<skill-name>/SKILL.md`
-
-For narrow director-invoked work, load the directly relevant sibling skill and `phaser-qa-release`. For broad game creation or premium iteration, load all five. Do not skip sibling loading just because this director contains a summarized phase OS.
+- `threejs-image-generator/SKILL.md` — concept/reference sheets, sprite sheet art, texture references, backgrounds, logos, icons, decals, GUI/title/menu art, tile/tileset plates.
+- `threejs-audio-generator/SKILL.md` — SFX, ambience, UI sounds, interaction audio, announcer/dialogue, voice conversion, audio cleanup.
 
 ## External Asset Sourcing Gate
 
-Do not decide "image generator not needed" or "audio generator not needed" before loading the relevant skill files when the trigger categories are present.
-
-Before claiming an API key is unavailable, run the credential probe and paste its literal output in the report:
+- Never record "not-needed" for a generator before loading its `SKILL.md` when trigger surfaces exist.
+- Before claiming an API key is unavailable, run the credential probe and paste its literal `KEY=SET|MISSING` output into the report. Each generator script also has its own `probe` subcommand.
 
 ```bash
 bash <director-skill-dir>/scripts/probe_asset_credentials.sh
 ```
 
-Expected output shape:
+- For premium hero surfaces (player sprite, enemy/boss sprites, signature props, background plates, logo/icon/GUI art), procedural-only is not an allowed final answer without real blocker evidence: a `MISSING` probe line, or an attempted generation command plus its API/network/quota error. Otherwise at least one high-value surface must show an image generator output path, sprite sheet, or documented hybrid chain.
+- For premium active gameplay, missing audio is a reported gap unless the user asked for silent/offline output or the audio key/API is blocked.
+- Fill the external asset sourcing ledger before the graphics phase. The ledger template and the allowed skip reasons live in `references/phase-playbook.md`.
 
-```text
-TRIPO_API_KEY=SET|MISSING
-GEMINI_API_KEY=SET|MISSING
-ELEVENLABS_API_KEY=SET|MISSING
-```
+## Reference Gate
 
-The probe sources the user's shell profiles and prints only SET/MISSING markers, never secret values. `key unavailable` is not a valid skip reason unless this probe output is shown.
+References are phase-entry gates, not optional enrichment. The canonical per-phase Required References list lives in `references/phase-playbook.md`; load that file at planning time for broad work and at phase entry otherwise.
+
+- Load required references at phase entry, not at the end.
+- Track every required reference in the reference ledger with yes/no/not-needed, path, and failure reason.
+- A phase cannot be marked `done` until its required references are loaded, or the final answer reports the reference as unavailable and the phase as blocked/fallback.
+- For premium/showcase claims, the final response must include the filled 2D visual scorecard from `phaser-2d-graphics-builder/references/visual-scorecard.md`, including measured evidence, average, and automatic failures remaining. Do not substitute a personal rubric.
+- Thorough mode is the default for broad, premium, showcase, complete, and release-ready requests. Economy mode is allowed only for narrow fixes that do not claim premium quality.
+
+If Task/subagent/workflow tools are available, delegate each major phase to a focused worker with the phase `SKILL.md` plus its required references explicitly loaded. If unavailable, execute serially after loading the same files.
 
 ## Ledgers
 
-Track three ledgers for every broad or premium game request:
+Keep four ledgers: skill-loading, reference, external asset sourcing, and phase execution. Templates live in `references/phase-playbook.md`.
 
-### Skill-Loading Ledger
-
-```text
-Sibling skill files loaded:
-- Phaser gameplay systems: yes/no, path or reason:
-- Phaser 2D graphics: yes/no, path or reason:
-- UI designer: yes/no, path or reason:
-- Phaser debug/profile: yes/no, path or reason:
-- Phaser QA/release: yes/no, path or reason:
-- Image generator: yes/no/not-needed, path or reason:
-- Audio generator: yes/no/not-needed, path or reason:
-```
-
-### Reference Ledger
-
-```text
-Required references loaded:
-- gameplay-workflows: yes/no, path:
-- physics-engine-selection: yes/no, path or reason not needed:
-- new-game-definition-of-done: yes/no, path:
-- <genre> premium checklist: yes/no, path or reason not loaded:
-- 2d-visual-scorecard: yes/no, path:
-- implementation-blueprint: yes/no, path:
-- ui-patterns: yes/no, path:
-- debug-profile-checklists: yes/no, path:
-- qa-release-checklists: yes/no, path:
-```
-
-### Phase Execution Ledger
-
-```text
-Phases executed:
-1. Discovery/contract: done/skipped, evidence:
-2. Gameplay systems: done/skipped, evidence:
-3. Asset sourcing: done/skipped, evidence:
-4. 2D graphics: done/skipped, evidence:
-5. UI: done/skipped, evidence:
-6. Debug/profile: done/skipped, evidence:
-7. QA/release: done/skipped, evidence:
-```
+Compaction rule: report every row that has meaningful state (yes/no/blocked/done/skipped plus path or evidence), and collapse consecutive `not-needed` rows into a single line naming them. Never omit or compress rows that carry real state.
 
 ## Phase Routing
 
-Route phases to the appropriate specialist skills:
+- `phaser-gameplay-systems`: design brief, core loop contract, level/encounter plan, first playable slice, Phaser scene architecture (Boot/Preload/Menu/Game/UI), mechanics, entities, input, camera, physics selection (Matter.js/Arcade), game feel.
+- External asset sourcing: credential probe, generator skill loading, source decision per surface, task IDs/output files or blocker evidence. Must complete before the graphics phase is `done` for premium work.
+- `phaser-2d-graphics-builder`: basic-looking screenshots, sprite/tilemap architecture, sprite sheets, particle systems, palette, parallax, 2D visual scorecard.
+- `threejs-game-ui-designer`: HUDs, menus, overlays, responsive UI, icons, safe areas, UI states.
+- `phaser-debug-profiler`: blank canvas, runtime bugs, loading, resize, mobile input/render bugs, performance profiling (body/sprite/scene-object counts).
+- `phaser-qa-release`: browser QA, screenshots, canvas pixels, responsive checks, visual test harness decision, bot playtest, production build, preview, release notes.
+- `threejs-image-generator` / `threejs-audio-generator`: external AI-generated 2D art (sprites, tilesets, backgrounds, logos, GUI) and SFX/ambience/voice.
 
-| Phase | Specialist Skill |
-|---|---|
-| Discovery & playable contract | `phaser-game-director` (this skill) |
-| Gameplay systems | `phaser-gameplay-systems` |
-| External asset sourcing | `threejs-image-generator`, `threejs-audio-generator` |
-| 2D graphics | `phaser-2d-graphics-builder` |
-| UI | `threejs-game-ui-designer` |
-| Debug & profile | `phaser-debug-profiler` |
-| QA & release | `phaser-qa-release` |
+When a sibling skill file is loaded, follow its workflow for that phase. Phase entry/exit evidence, ledger templates, and the fallback procedure for unloadable siblings all live in `references/phase-playbook.md`.
+
+## Packaged Runtime Resources
+
+New projects use the gameplay skill's scaffold creator; canvas verification uses the generated game's `npm run inspect:canvas` or the QA skill's packaged inspector:
+
+```bash
+python3 <phaser-gameplay-systems-skill-dir>/scripts/create_phaser_game.py ./my-game
+node <phaser-qa-release-skill-dir>/scripts/inspect-phaser-canvas.mjs --url http://127.0.0.1:5288
+```
 
 ## Premium Completion Rule
 
-For premium/showcase 2D game claims, all of these must be true:
-
-- Skill-loading ledger + reference ledger present
-- External asset sourcing ledger present (when trigger surfaces exist)
-- Credential probe output + external output/blocker evidence present
-- Playable loop works through real input
-- Active-play screenshots for desktop + mobile
-- 2D visual scorecard: no category below 2, average >= 2.3
-- HUD/menu states readable and responsive
-- At least one high-value visual surface has external asset evidence (image generator output path, sprite sheet, or documented hybrid chain)
+Premium, polished, complete, release-ready, and showcase requests require visible quality across gameplay, hero/player sprite, enemies/hazards, rewards/interactables, world/tilemap/background layers, HUD/menu states, sprite art/palette/particles, feel, performance/mobile, and QA. If screenshots are dominated by generic rectangles/circles, flat backgrounds, default text, sparse scenes, or unchecked particle clutter, the task is not done. The full completion gate is in `references/phase-playbook.md`.
 
 ## Required Verification
 
-For broad/premium work, verify before claiming done:
+- Build/typecheck; local browser run; console/page error check.
+- Game design brief, core loop contract, and level/encounter plan for broad game creation or major gameplay changes.
+- Active desktop and mobile screenshots plus nonblank canvas pixel evidence.
+- Main input/objective/fail-or-restart path exercised.
+- 2D visual scorecard with measured evidence for premium/showcase claims, plus a fresh-eyes review pass per `phaser-2d-graphics-builder/references/visual-scorecard.md`.
+- External asset sourcing ledger, credential probe output, and real external outputs or blocker evidence for premium asset-category claims.
+- Audio evidence or a reported blocker for premium active-gameplay claims.
+- Body count, sprite count, and scene-object diagnostics when physics complexity or sprite/particle counts changed.
+- Visual test harness decision, and bot playtest evidence when release-ready gameplay is claimed.
+- Final ledgers with evidence and remaining blockers.
 
-- `npm run build` passes
-- Local browser run with console/page error check
-- Playwright screenshot captured
-- Canvas nonblank pixel check via `inspect-phaser-canvas.mjs`
-- Desktop + mobile viewport screenshots
-- Main input path tested through real interaction
-- Performance snapshot: body count, sprite count, scene object count
-- UI text-fit, overlap, safe-area, and touch-target check when UI changed
+## Report Audit
+
+When shell tools are available, draft the final evidence report to a markdown file and audit it before finalizing broad or premium work:
+
+```bash
+python3 <director-skill-dir>/scripts/audit_reference_report.py --premium /path/to/final-report.md
+```
+
+Use `--premium` for premium/showcase/high-fidelity/polished/complete/release-ready/"less basic" claims; add `--physics` for physics-heavy games (Matter.js/Arcade bodies, sensors); add `--audio` when generated or integrated audio is in scope; add `--no-design` only for debug/perf/QA-only reports with no gameplay claims. If the audit fails, fix the missing sections or state the exact blocker instead of claiming completion. If the script is unavailable, manually enforce the same sections listed in Required Verification.
 
 ## Final Response
 
-Report the skill-loading ledger, reference ledger, asset sourcing ledger (when applicable), phase execution ledger, 2D visual scorecard (before/after when graphics changed), controls, verified behavior, changed files, and remaining gaps.
+Report the ledgers (compacted per the rule above), game design brief, core loop contract, level/encounter plan, files changed, run URL, controls, verification commands, screenshots/artifacts, body/sprite/performance notes, visual test harness decision, quality gates passed, skipped phases, and remaining risks. For premium/showcase claims, include the filled 2D visual scorecard with measured evidence and automatic failures remaining. Be precise: "invoked" means a slash/tool skill invocation; "loaded" means the file was read into context; "executed phase" means the work was performed under loaded skill guidance or the phase playbook.

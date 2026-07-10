@@ -122,3 +122,12 @@ Required intent types:
 - AI/opponent logic tested with diverse deck archetypes (aggro, control, combo, midrange).
 - Economy model simulated: average packs to complete a set, dust/gold per day F2P, time to competitive deck.
 - Draft balance: no single card should be auto-pick >80% of the time. Card win-rate data tracked per Ascension/difficulty tier.
+
+### Accessibility
+- Card rarity conveyed by more than color alone: distinct frame border treatment, gem count, rarity icon, and/or text label. Colorblind players must distinguish Common/Uncommon/Rare/Epic/Legendary without relying on the color gem.
+- Card type (unit/creature, spell, equipment/enchantment) distinguishable beyond frame color — frame shape, banner icon, border pattern. Don't lean solely on the colored mana gem to encode type.
+- Status keywords (Taunt/Guard, Stealth, Lifesteal, Poisoned, Vulnerable) indicated by icon + text tooltip + silhouette modifier, not just a colored tint on the card border.
+- Card rules text and mana cost legible at mobile card sizes — font size, weight, and contrast meet WCAG AA at the smallest rendered card width in the hand fan.
+- Valid/invalid target highlighting not color-only (green/red): add a checkmark/cross icon, border pulse, or outline pattern so colorblind players read playability.
+- Reduced-motion option shortens card play, flip, summon, and damage-number animations for players sensitive to tween-heavy card choreography.
+- Important audio cues (turn-start chime, rope-burn timer warning, damage impact, victory/defeat fanfare) accompanied by visual equivalents (banner, timer flash, screen edge) so the state is not audio-only.
