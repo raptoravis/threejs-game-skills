@@ -34,6 +34,7 @@ Self-contained skills for building playable, polished Three.js 3D and Phaser 2D 
 - **Claude Code**: reads `.claude-plugin/plugin.json` (native plugin or file copy)
 - **OpenCode**: npm package `threejs-game-skills` or local `.opencode/opencode.json`
 - **Reasonix**: `npx threejs-game-skills` or file copy
+- **Cursor**: reads `.cursor/rules/*.mdc` (file copy to `~/.cursor/rules/`)
 
 ## Install
 

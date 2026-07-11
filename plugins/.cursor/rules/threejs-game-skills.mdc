@@ -1,0 +1,139 @@
+---
+description: Three.js & Phaser browser game development skills — complete instructions for building playable, polished games. Routes requests through game directors and specialist skills (gameplay, graphics, UI, debug, QA, 3D/2D/image/audio generation).
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx,**/*.json,**/*.html,**/*.css,**/*.scss,**/*.less,**/*.md,**/*.vue,**/*.svelte
+alwaysApply: false
+---
+
+# Three.js + Phaser Game Skills
+
+This repo contains plugin assets for Three.js and Phaser browser-game development, organized for Claude Code, Codex, OpenCode, Reasonix, and Cursor.
+
+## Engine Routing
+
+Route game requests by engine based on genre and user intent:
+
+- **Three.js (3D)**: FPS, racing, flight combat, 3D platformer, third-person action, endless runner (3D), physics puzzles (3D), survival/crafting (3D).
+- **Phaser (2D)**: 2D platformer, RPG (top-down/isometric), tower defense, card game, bullet hell / shoot-em-up, RTS, narrative games, SLG/strategy.
+- **Ambiguous requests**: If the user does not name an engine, ask "3D or 2D?" or infer from genre keywords (横版=Phaser, 第一人称=Three.js, 卡牌=Phaser, 赛车=Three.js, etc.).
+- **Explicit engine requests**: "use threejs", "use phaser", "3D game", "2D game" → route to the matching director.
+- **Coexistence**: Both engine skill sets coexist. Do not delete or degrade Three.js skills when adding Phaser skills, and vice versa.
+
+## Skill System
+
+When users request game development work, load the relevant skill files from `plugins/skills/`:
+
+### Three.js (3D)
+
+| Skill | Description |
+| --- | --- |
+| `threejs-game-director` | Primary entrypoint for complete 3D game builds and orchestration |
+| `threejs-gameplay-systems` | Playable loop, architecture, mechanics, entities, controls, camera, physics |
+| `threejs-aaa-graphics-builder` | Visual scorecard, asset architecture, models, materials, VFX, render polish |
+| `threejs-game-ui-designer` | HUDs, menus, overlays, responsive UI, icons, safe areas (shared: 3D + 2D) |
+| `threejs-debug-profiler` | Scene/runtime/render bugs, mobile bugs, performance profiling |
+| `threejs-qa-release` | Browser QA, screenshots, canvas pixels, responsive checks, production build |
+| `threejs-3d-generator` | Tripo API text/image-to-3D, texture, auto-rig, animation, conversion |
+| `threejs-image-generator` | Gemini image generation for concepts, textures, decals, icons, GUI art (shared: 3D + 2D) |
+| `threejs-audio-generator` | ElevenLabs SFX, ambience, UI sounds, voice/TTS, audio integration (shared: 3D + 2D) |
+
+### Phaser (2D)
+
+| Skill | Description |
+| --- | --- |
+| `phaser-game-director` | Primary entrypoint for complete 2D game builds and orchestration |
+| `phaser-gameplay-systems` | Playable loop, scenes, entities, input, Matter.js physics, camera, game feel |
+| `phaser-2d-graphics-builder` | 2D visual scorecard, sprites, tilemaps, parallax, particles, palette, lighting |
+| `phaser-debug-profiler` | Scene/physics bugs, mobile bugs, performance profiling for Phaser |
+| `phaser-qa-release` | Browser QA, screenshots, canvas pixels, responsive checks, production build |
+
+## Default Technical Stack (Three.js)
+
+- Prefer TypeScript, Vite, npm package imports, and Three.js modules.
+- Use `three/addons/...` for official controls, loaders, and post-processing helpers.
+- Use simple custom collision for arcade triggers and prototype-scale interactions.
+- Use Rapier as the default robust physics engine for serious Three.js browser games.
+- Use `cannon-es` only as a lightweight JavaScript fallback for small/simple rigid-body scenes.
+- Load `plugins/skills/threejs-gameplay-systems/references/physics-engine-selection.md` before adding or changing physics-heavy gameplay.
+- Use `lil-gui` for local tuning when it materially speeds iteration.
+- Use a lightweight HUD or `stats.js` for frame diagnostics when performance is in scope.
+- Treat WebGPU as conditional. Use Three.js `WebGPURenderer` only when the project benefits from it and keep a WebGL/WebGL2 fallback path.
+
+## Default Technical Stack (Phaser 2D)
+
+- Prefer TypeScript, Vite, npm package imports, and Phaser 4 modules (`phaser@^4.2.0`).
+- Use Phaser's Scene lifecycle: `BootScene → PreloadScene → MenuScene → GameScene → UIScene`.
+- Use Matter.js as the default physics engine (bundled with Phaser, no extra package).
+- Use Arcade Physics only for simple AABB/circle overlap games.
+- Use custom collision for grid-aligned movement, card games, and turn-based games.
+- Load `plugins/skills/phaser-gameplay-systems/references/physics-engine-selection.md` before adding or changing physics-heavy 2D gameplay.
+- Use `lil-gui` for local tuning when it materially speeds iteration.
+- Use Phaser's ScaleManager with `FIT` mode for responsive/mobile-friendly sizing.
+- Use texture atlases to minimize draw calls.
+- Use object pooling for frequently created/destroyed game objects.
+
+## Game Quality Bar (Three.js)
+
+- For broad requests to build, upgrade, polish, or finish a Three.js game, route through `threejs-game-director` first.
+- Build a playable loop first. A static scene is not done.
+- Do not stop at first playable slice when the user asked for premium, AAA, polished, complete, release-ready, or showcase quality.
+- Keep scene setup, loop, input, systems, entities, UI, assets, and debug tools separated once the prototype grows beyond a single simple file.
+- Tune movement, camera, collisions, feedback, and HUD through short playtest loops.
+- For physics-heavy games, report engine choice, fixed timestep, collider strategy, sensors, CCD use, body/collider counts, and restart cleanup evidence.
+- Avoid decorative-only UI, generic purple gradients, particle clutter, and unchecked post-processing.
+- Keep mobile input and resize behavior in the first implementation path, not as a final afterthought.
+- Premium/AAA/showcase claims must include the filled visual scorecard from `plugins/skills/threejs-aaa-graphics-builder/references/visual-scorecard.md`.
+- For premium/AAA work with characters, vehicles, ships, weapons, buildings, props, skies, textures, decals, logos, icons, GUI art, SFX, ambience, or voice, load `threejs-3d-generator`, `threejs-image-generator`, and/or `threejs-audio-generator` before deciding procedural/generated assets are unnecessary.
+- Report an external asset sourcing ledger for premium graphics work.
+
+## Game Quality Bar (Phaser 2D)
+
+- For broad requests to build, upgrade, polish, or finish a Phaser 2D game, route through `phaser-game-director` first.
+- Build a playable loop first. A static scene is not done.
+- Keep Boot/Game/UI scene separation from the first prototype.
+- Tune movement, physics, camera, collision, feedback, and HUD through short playtest loops.
+- Keep mobile input and FIT scaling behavior in the first implementation path.
+- Use `phaser-2d-graphics-builder` when screenshots still look basic across multiple visual surfaces.
+- Premium/showcase 2D claims must include the filled 2D visual scorecard from `plugins/skills/phaser-2d-graphics-builder/references/visual-scorecard.md`.
+
+## Verification Bar
+
+For meaningful Three.js changes, gather evidence before claiming success:
+
+- `npm run build`
+- a local dev or preview server opened in a browser
+- browser console and page error check
+- Playwright screenshot
+- canvas nonblank pixel check
+- at least one desktop and one mobile viewport
+- interaction check for the main control path
+- performance snapshot when draw calls, asset counts, shaders, or post-processing changed
+- UI text-fit, overlap, safe-area, and touch-target evidence when interface layout changed
+- visual scorecard before/after when the user asks for premium, AAA, showcase, or "less basic" graphics
+
+## Best Entry Points
+
+- Use `threejs-game-director` for complete games, major upgrades, premium polish, release-ready work, or anything broad.
+- Use `threejs-gameplay-systems` for mechanics, architecture, input, camera, physics, scoring, objectives, and game feel.
+- Use `threejs-aaa-graphics-builder` when screenshots look basic or the game needs stronger models, materials, lighting, VFX, world detail, or render polish.
+- Use `threejs-game-ui-designer` for HUDs, menus, overlays, responsive layout, safe areas, icons, touch controls, and text fit.
+- Use `threejs-debug-profiler` for black screens, runtime errors, loading issues, resize/mobile bugs, performance, draw calls, triangles, textures, and memory.
+- Use `threejs-qa-release` for production builds, browser verification, screenshots, canvas pixels, mobile checks, release risk reports, and static-hosting readiness.
+- Use `threejs-3d-generator` for Tripo API text/image-to-3D models, texture, rigging, animation, conversion, and GLB/FBX game assets.
+- Use `threejs-image-generator` for Gemini-generated concepts, image-to-3D inputs, textures, decals, skies, backgrounds, icons, logos, GUI art, and title/menu art.
+- Use `threejs-audio-generator` for ElevenLabs SFX, ambience, UI sounds, voice/TTS, voice conversion, cleanup, and Three.js audio integration.
+
+For most user-facing game requests, start with `threejs-game-director` and let it pull in the specialists.
+
+## MCP Servers
+
+This plugin includes MCP server configuration for Playwright (browser automation) and sequential-thinking (complex reasoning). See `plugins/.mcp.json` for the full configuration.
+
+## Optional API Keys
+
+| Provider | Skill | Environment variable | Use cases |
+| --- | --- | --- | --- |
+| Tripo API | `threejs-3d-generator` | `TRIPO_API_KEY` | Text/image/multiview to 3D, GLB/FBX hero models, rigging, animation |
+| Gemini image API | `threejs-image-generator` | `GEMINI_API_KEY` | Concept art, textures, decals, skies, icons, logos, GUI art |
+| ElevenLabs API | `threejs-audio-generator` | `ELEVENLABS_API_KEY` | SFX, ambience, UI sounds, voice/TTS, audio cleanup |
+
+Never commit API keys or put them in browser-side game code.

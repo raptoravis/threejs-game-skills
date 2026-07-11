@@ -70,6 +70,29 @@ Reasonix 不支持 plugin marketplace，通过 npx 安装：
 npx skills add raptoravis/threejs-game-skills --skill '*' -a reasonix -g -y
 ```
 
+### Cursor install
+
+Cursor 通过复制 rules 文件到 `~/.cursor/rules/` 安装：
+
+```bash
+# 从本地 checkout
+./install.sh --cursor
+
+# 强制覆盖已有规则
+./install.sh --cursor --force
+```
+
+Windows PowerShell:
+
+```powershell
+.\install.ps1 -Cursor
+.\install.ps1 -Cursor -Force
+```
+
+安装后重启 Cursor。Rule 文件 (`threejs-game-skills.mdc`) 会被复制到 `~/.cursor/rules/`，MCP 配置会被复制到 `~/.cursor/mcp.json`。
+
+在 Cursor 中使用时，通过 `@threejs-game-skills` 引用该规则。
+
 ### 本地开发安装
 
 从本地 checkout 安装到各 agent：
@@ -78,6 +101,7 @@ npx skills add raptoravis/threejs-game-skills --skill '*' -a reasonix -g -y
 ./install.sh --codex
 ./install.sh --claude
 ./install.sh --opencode
+./install.sh --cursor
 ./install.sh --all
 ```
 

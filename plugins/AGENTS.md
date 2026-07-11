@@ -1,6 +1,6 @@
 # Agent Instructions
 
-This repo contains plugin assets for Three.js and Phaser browser-game development, organized for Claude Code, Codex, OpenCode, and Reasonix.
+This repo contains plugin assets for Three.js and Phaser browser-game development, organized for Claude Code, Codex, OpenCode, Reasonix, and Cursor.
 
 ## Engine Routing
 

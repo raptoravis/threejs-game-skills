@@ -5,6 +5,7 @@ Installs Three.js Game Skills for AI coding agents.
 .DESCRIPTION
 Claude Code / Codex / OpenCode -> native plugin commands (preferred) or file copy fallback
 Reasonix                       -> file copy (no plugin marketplace)
+Cursor                         -> file copy (rules to ~/.cursor/rules/)
 Agents                         -> file copy (generic agent skills dir)
 
 .PARAMETER Claude
@@ -18,6 +19,9 @@ Install for OpenCode
 
 .PARAMETER Reasonix
 Install skills into Reasonix directory
+
+.PARAMETER Cursor
+Install rules into Cursor directory
 
 .PARAMETER Agents
 Install into $HOME\.agents\skills
@@ -48,6 +52,7 @@ param(
     [switch]$Codex,
     [switch]$OpenCode,
     [switch]$Reasonix,
+    [switch]$Cursor,
     [switch]$Agents,
     [switch]$All,
     [switch]$Force,
@@ -64,18 +69,20 @@ if ($All) {
     $Codex = $true
     $OpenCode = $true
     $Reasonix = $true
+    $Cursor = $true
 }
 
-if (-not ($Claude -or $Codex -or $OpenCode -or $Reasonix -or $Agents)) {
-    Write-Host "Usage: .\install.ps1 [-Claude] [-Codex] [-OpenCode] [-Reasonix] [-Agents] [-All] [-Force] [-PruneManaged] [-FileCopy]"
+if (-not ($Claude -or $Codex -or $OpenCode -or $Reasonix -or $Cursor -or $Agents)) {
+    Write-Host "Usage: .\install.ps1 [-Claude] [-Codex] [-OpenCode] [-Reasonix] [-Cursor] [-Agents] [-All] [-Force] [-PruneManaged] [-FileCopy]"
     Write-Host ""
     Write-Host "Targets:"
     Write-Host "  -Claude       Install for Claude Code (plugin preferred, file copy fallback)"
     Write-Host "  -Codex        Install for Codex (plugin preferred, file copy fallback)"
     Write-Host "  -OpenCode     Install for OpenCode (plugin preferred, file copy fallback)"
     Write-Host "  -Reasonix     Install skills into Reasonix directory (file copy only)"
+    Write-Host "  -Cursor       Install rules into Cursor directory (file copy only)"
     Write-Host "  -Agents       Install into `$HOME\.agents\skills (file copy only)"
-    Write-Host "  -All          Install for Claude Code, Codex, OpenCode, and Reasonix"
+    Write-Host "  -All          Install for Claude Code, Codex, OpenCode, Reasonix, and Cursor"
     Write-Host ""
     Write-Host "Options:"
     Write-Host "  -Force        Replace same-named skills / force plugin reinstall"
@@ -89,7 +96,11 @@ if (-not (Test-Path $sourceDir)) {
     exit 1
 }
 
-$homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { $env:HOME }
+$homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } elseif ($env:HOME) { $env:HOME } else { [Environment]::GetFolderPath("UserProfile") }
+if (-not $homeDir) {
+    Write-Error "Cannot determine user home directory. Set USERPROFILE or HOME environment variable."
+    exit 1
+}
 $repoUrl = "https://github.com/raptoravis/threejs-game-skills"
 $repoSpec = "raptoravis/threejs-game-skills"
 $pluginSpec = "threejs-game-skills@threejs-game-skills"
@@ -233,6 +244,43 @@ if ($OpenCode) {
         opencode plugin -g $openCodePluginSpec --force
     } -FileCopyBlock {
         Install-SkillsFileCopy -TargetDir $openCodeSkills -Label "OpenCode"
+    }
+}
+
+# ── Cursor (file copy: rules to ~/.cursor/rules/) ──
+
+if ($Cursor) {
+    $cursorRulesTarget = Join-Path $homeDir ".cursor\rules"
+    $cursorMcpTarget = Join-Path $homeDir ".cursor"
+    $cursorSourceRules = Join-Path $scriptDir "plugins\.cursor\rules"
+    $cursorSourceMcp = Join-Path $scriptDir "plugins\.cursor\mcp.json"
+
+    if (Test-Path $cursorSourceRules) {
+        Write-Host "Installing Cursor rules to $cursorRulesTarget"
+        New-Item -ItemType Directory -Path $cursorRulesTarget -Force | Out-Null
+        Get-ChildItem -Path $cursorSourceRules -Filter "*.mdc" | ForEach-Object {
+            $dest = Join-Path $cursorRulesTarget $_.Name
+            if ((Test-Path $dest) -and (-not $Force)) {
+                Write-Host "  Skipped $($_.Name) (already exists, use -Force to overwrite)"
+                return
+            }
+            Copy-Item -Path $_.FullName -Destination $dest -Force
+            Write-Host "  Installed $($_.Name) -> $dest"
+        }
+    } else {
+        Write-Warning "Cursor rules source not found: $cursorSourceRules"
+    }
+
+    if (Test-Path $cursorSourceMcp) {
+        $mcpDest = Join-Path $cursorMcpTarget "mcp.json"
+        Write-Host "Installing Cursor MCP config"
+        if ((Test-Path $mcpDest) -and (-not $Force)) {
+            Write-Host "  Skipped mcp.json (already exists at $mcpDest, use -Force to overwrite or merge manually)"
+        } else {
+            New-Item -ItemType Directory -Path $cursorMcpTarget -Force | Out-Null
+            Copy-Item -Path $cursorSourceMcp -Destination $mcpDest -Force
+            Write-Host "  Installed mcp.json -> $mcpDest"
+        }
     }
 }
 

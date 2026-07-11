@@ -1,6 +1,6 @@
 {
   "name": "threejs-game-skills",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": ".opencode/plugins/threejs-game-skills-plugin.js",
   "exports": {
     ".": ".opencode/plugins/threejs-game-skills-plugin.js",
@@ -44,6 +44,7 @@
     "plugins/.claude-plugin/",
     "plugins/.codex-plugin/",
     "plugins/.opencode/",
+    "plugins/.cursor/",
     "plugins/skills/",
     "plugins/skills/phaser-game-director/",
     "plugins/skills/phaser-gameplay-systems/",

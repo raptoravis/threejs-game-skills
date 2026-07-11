@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<'USAGE'
-Usage: ./install.sh [--claude] [--codex] [--opencode] [--reasonix] [--agents] [--all] [--force] [--prune-managed] [--file-copy]
+Usage: ./install.sh [--claude] [--codex] [--opencode] [--reasonix] [--cursor] [--agents] [--all] [--force] [--prune-managed] [--file-copy]
 
 Installs the Three.js game skills from ./skills into local agent skill
 directories. Prefers native plugin install when the agent CLI is available;
@@ -19,7 +19,8 @@ Targets:
   --codex    Install for Codex (plugin preferred, file copy fallback)
   --opencode Install for OpenCode (plugin preferred, file copy fallback)
   --reasonix Install skills into Reasonix directory (file copy only)
-  --all      Install for Claude Code, Codex, OpenCode, and Reasonix
+  --cursor   Install rules into Cursor directory (file copy only)
+  --all      Install for Claude Code, Codex, OpenCode, Reasonix, and Cursor
 
 Advanced:
   --agents  Install into ${AGENTS_SKILLS_DIR:-$HOME/.agents/skills} (file copy only)
@@ -39,6 +40,7 @@ claude="false"
 codex="false"
 opencode="false"
 reasonix="false"
+cursor="false"
 agents="false"
 force="false"
 prune="false"
@@ -62,11 +64,16 @@ while [[ $# -gt 0 ]]; do
       reasonix="true"
       shift
       ;;
+    --cursor)
+      cursor="true"
+      shift
+      ;;
     --all)
       claude="true"
       codex="true"
       opencode="true"
       reasonix="true"
+      cursor="true"
       shift
       ;;
     --agents)
@@ -96,7 +103,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ "$claude" != "true" && "$codex" != "true" && "$opencode" != "true" && "$reasonix" != "true" && "$agents" != "true" ]]; then
+if [[ "$claude" != "true" && "$codex" != "true" && "$opencode" != "true" && "$reasonix" != "true" && "$cursor" != "true" && "$agents" != "true" ]]; then
   usage
   exit 1
 fi
@@ -104,6 +111,16 @@ fi
 if [[ ! -d "$source_dir" ]]; then
   echo "Source skills directory not found: $source_dir" >&2
   exit 1
+fi
+
+# Ensure HOME is set (shells may not export it in some environments)
+if [[ -z "${HOME:-}" ]]; then
+  HOME="$(eval echo ~$(whoami 2>/dev/null || echo "$USER"))"
+  if [[ -z "$HOME" || "$HOME" = "~" ]]; then
+    echo "Cannot determine user home directory. Set HOME environment variable." >&2
+    exit 1
+  fi
+  export HOME
 fi
 
 repo_spec="raptoravis/threejs-game-skills"
@@ -238,6 +255,45 @@ if [[ "$opencode" == "true" ]]; then
   # version already exists, leaving stale plugin code in place.
   opencode_install_cmd="opencode plugin -g $opencode_plugin_spec --force"
   install_via_plugin "opencode" "OpenCode" "$opencode_skills" "$opencode_install_cmd"
+fi
+
+# ── Cursor (file copy only) ──
+
+if [[ "$cursor" == "true" ]]; then
+  cursor_rules_target="${CURSOR_RULES_DIR:-$HOME/.cursor/rules}"
+  cursor_mcp_target="${CURSOR_MCP_DIR:-$HOME/.cursor}"
+  cursor_source_rules="$script_dir/plugins/.cursor/rules"
+  cursor_source_mcp="$script_dir/plugins/.cursor/mcp.json"
+
+  if [[ -d "$cursor_source_rules" ]]; then
+    echo "Installing Cursor rules to $cursor_rules_target"
+    mkdir -p "$cursor_rules_target"
+    for rule in "$cursor_source_rules"/*.mdc; do
+      [[ -f "$rule" ]] || continue
+      rule_name="$(basename "$rule")"
+      dest="$cursor_rules_target/$rule_name"
+      if [[ -e "$dest" && "$force" != "true" ]]; then
+        echo "  Skipped $rule_name (already exists, use --force to overwrite)"
+        continue
+      fi
+      cp "$rule" "$dest"
+      echo "  Installed $rule_name -> $dest"
+    done
+  else
+    echo "Cursor rules source not found: $cursor_source_rules" >&2
+  fi
+
+  if [[ -f "$cursor_source_mcp" ]]; then
+    mcp_dest="$cursor_mcp_target/mcp.json"
+    echo "Installing Cursor MCP config"
+    if [[ -f "$mcp_dest" && "$force" != "true" ]]; then
+      echo "  Skipped mcp.json (already exists at $mcp_dest, use --force to overwrite or merge manually)"
+    else
+      mkdir -p "$cursor_mcp_target"
+      cp "$cursor_source_mcp" "$mcp_dest"
+      echo "  Installed mcp.json -> $mcp_dest"
+    fi
+  fi
 fi
 
 # ── Reasonix (file copy only) ──
