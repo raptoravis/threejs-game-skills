@@ -28,7 +28,7 @@ Advanced:
             also reading Codex or Claude skills, otherwise skills can duplicate.
 
 Options:
-  --force          Replace same-named skills in the target directory
+  --force          Force clean reinstall (uninstall then install) instead of update-in-place
   --prune-managed  Remove stale skills recorded in this repo's managed manifest
   --file-copy      Force file-copy install even when plugin CLI is available
 USAGE
@@ -175,14 +175,20 @@ install_skills() {
     source_names="$source_names$skill_name "
     local dest="$target/$skill_name"
 
-    if [[ -e "$dest" && "$force" != "true" ]]; then
-      continue
+    if [[ -e "$dest" ]]; then
+      if [[ "$force" == "true" ]]; then
+        action="Reinstalling"
+      else
+        action="Updating"
+      fi
+    else
+      action="Installing"
     fi
 
     rm -rf "$dest"
     mkdir -p "$dest"
     copy_skill "$skill" "$dest"
-    echo "  Installed $skill_name -> $dest"
+    echo "  ${action} $skill_name -> $dest"
   done
 
   if [[ "$prune" == "true" && -f "$manifest" ]]; then
@@ -231,9 +237,9 @@ if [[ "$claude" == "true" ]]; then
   claude_skills="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
   claude_install_cmd="claude plugin marketplace add $repo_spec 2>/dev/null; "
   if [[ "$force" == "true" ]]; then
-    claude_install_cmd+="claude plugin update $plugin_spec || claude plugin install $plugin_spec"
+    claude_install_cmd+="claude plugin uninstall $plugin_spec 2>/dev/null; claude plugin install $plugin_spec"
   else
-    claude_install_cmd+="claude plugin install $plugin_spec"
+    claude_install_cmd+="claude plugin update $plugin_spec || claude plugin install $plugin_spec"
   fi
   install_via_plugin "claude" "Claude Code" "$claude_skills" "$claude_install_cmd"
 fi
@@ -242,7 +248,11 @@ fi
 
 if [[ "$codex" == "true" ]]; then
   codex_skills="${CODEX_HOME:-$HOME/.codex}/skills"
-  codex_install_cmd="codex plugin marketplace add $repo_spec 2>/dev/null; codex plugin add threejs-game-skills@threejs-game-skills"
+  if [[ "$force" == "true" ]]; then
+    codex_install_cmd="codex plugin marketplace add $repo_spec 2>/dev/null; codex plugin remove threejs-game-skills@threejs-game-skills 2>/dev/null; codex plugin add threejs-game-skills@threejs-game-skills"
+  else
+    codex_install_cmd="codex plugin marketplace add $repo_spec 2>/dev/null; codex plugin update threejs-game-skills@threejs-game-skills || codex plugin add threejs-game-skills@threejs-game-skills"
+  fi
   install_via_plugin "codex" "Codex" "$codex_skills" "$codex_install_cmd"
 fi
 
@@ -250,10 +260,15 @@ fi
 
 if [[ "$opencode" == "true" ]]; then
   opencode_skills="${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills"
-  # Always use --force so the cached package is updated to latest;
-  # without it, opencode plugin -g skips the update when a cached
-  # version already exists, leaving stale plugin code in place.
-  opencode_install_cmd="opencode plugin -g $opencode_plugin_spec --force"
+  if [[ "$force" == "true" ]]; then
+    # Force clean reinstall: remove cached package first, then install fresh
+    opencode_install_cmd="opencode plugin -r $opencode_plugin_spec 2>/dev/null; opencode plugin -g $opencode_plugin_spec --force"
+  else
+    # Always use --force so the cached package is updated to latest;
+    # without it, opencode plugin -g skips the update when a cached
+    # version already exists, leaving stale plugin code in place.
+    opencode_install_cmd="opencode plugin -g $opencode_plugin_spec --force"
+  fi
   install_via_plugin "opencode" "OpenCode" "$opencode_skills" "$opencode_install_cmd"
 fi
 
@@ -272,12 +287,17 @@ if [[ "$cursor" == "true" ]]; then
       [[ -f "$rule" ]] || continue
       rule_name="$(basename "$rule")"
       dest="$cursor_rules_target/$rule_name"
-      if [[ -e "$dest" && "$force" != "true" ]]; then
-        echo "  Skipped $rule_name (already exists, use --force to overwrite)"
-        continue
+      if [[ -e "$dest" ]]; then
+        if [[ "$force" == "true" ]]; then
+          action="Reinstalling"
+        else
+          action="Updating"
+        fi
+      else
+        action="Installing"
       fi
       cp "$rule" "$dest"
-      echo "  Installed $rule_name -> $dest"
+      echo "  ${action} $rule_name -> $dest"
     done
   else
     echo "Cursor rules source not found: $cursor_source_rules" >&2
@@ -286,13 +306,18 @@ if [[ "$cursor" == "true" ]]; then
   if [[ -f "$cursor_source_mcp" ]]; then
     mcp_dest="$cursor_mcp_target/mcp.json"
     echo "Installing Cursor MCP config"
-    if [[ -f "$mcp_dest" && "$force" != "true" ]]; then
-      echo "  Skipped mcp.json (already exists at $mcp_dest, use --force to overwrite or merge manually)"
+    if [[ -f "$mcp_dest" ]]; then
+      if [[ "$force" == "true" ]]; then
+        mcp_action="Reinstalling"
+      else
+        mcp_action="Updating"
+      fi
     else
-      mkdir -p "$cursor_mcp_target"
-      cp "$cursor_source_mcp" "$mcp_dest"
-      echo "  Installed mcp.json -> $mcp_dest"
+      mcp_action="Installing"
     fi
+    mkdir -p "$cursor_mcp_target"
+    cp "$cursor_source_mcp" "$mcp_dest"
+    echo "  ${mcp_action} mcp.json -> $mcp_dest"
   fi
 fi
 

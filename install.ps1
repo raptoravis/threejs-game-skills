@@ -30,7 +30,7 @@ Install into $HOME\.agents\skills
 Install for Claude Code, Codex, OpenCode, and Reasonix
 
 .PARAMETER Force
-Replace same-named skills / force plugin reinstall
+Force clean reinstall (uninstall then install) instead of update-in-place
 
 .PARAMETER PruneManaged
 Remove stale skills recorded in this repo's managed manifest (file-copy targets only)
@@ -85,7 +85,7 @@ if (-not ($Claude -or $Codex -or $OpenCode -or $Reasonix -or $Cursor -or $Agents
     Write-Host "  -All          Install for Claude Code, Codex, OpenCode, Reasonix, and Cursor"
     Write-Host ""
     Write-Host "Options:"
-    Write-Host "  -Force        Replace same-named skills / force plugin reinstall"
+    Write-Host "  -Force        Force clean reinstall (uninstall then install) instead of update-in-place"
     Write-Host "  -FileCopy     Force file-copy install even when plugin CLI is available"
     Write-Host "  -PruneManaged Remove stale skills (file-copy targets only)"
     exit 1
@@ -154,13 +154,11 @@ function Install-SkillsFileCopy {
         $skillName = $_.Name
         $sourceNames = "$sourceNames$skillName "
         $dest = Join-Path $TargetDir $skillName
-        if ((Test-Path $dest) -and (-not $Force)) {
-            return
-        }
+        $action = if (Test-Path $dest) { if ($Force) { "Reinstalling" } else { "Updating" } } else { "Installing" }
         Remove-Item -Recurse -Force $dest -ErrorAction SilentlyContinue
         New-Item -ItemType Directory -Path $dest -Force | Out-Null
         Copy-SkillDir -Source $skillDir -Dest $dest
-        Write-Host "  Installed $skillName -> $dest"
+        Write-Host "  ${action} $skillName -> $dest"
     }
 
     if ($PruneManaged) {
@@ -211,10 +209,11 @@ if ($Claude) {
     Install-NativePlugin -AgentName "claude" -ClrName "Claude Code" -InstallBlock {
         claude plugin marketplace remove $repoSpec 2>$null; claude plugin marketplace add $repoSpec 2>$null
         if ($Force) {
+            claude plugin uninstall $pluginSpec 2>$null
+            claude plugin install $pluginSpec
+        } else {
             claude plugin update $pluginSpec
             if ($LASTEXITCODE -ne 0) { claude plugin install $pluginSpec }
-        } else {
-            claude plugin install $pluginSpec
         }
     } -FileCopyBlock {
         Install-SkillsFileCopy -TargetDir $claudeSkills -Label "Claude Code"
@@ -227,7 +226,13 @@ if ($Codex) {
     $codexSkills = if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME "skills" } else { Join-Path $homeDir ".codex\skills" }
     Install-NativePlugin -AgentName "codex" -ClrName "Codex" -InstallBlock {
         codex plugin marketplace add $repoSpec 2>$null
-        codex plugin add "threejs-game-skills@threejs-game-skills"
+        if ($Force) {
+            codex plugin remove "threejs-game-skills@threejs-game-skills" 2>$null
+            codex plugin add "threejs-game-skills@threejs-game-skills"
+        } else {
+            codex plugin update "threejs-game-skills@threejs-game-skills"
+            if ($LASTEXITCODE -ne 0) { codex plugin add "threejs-game-skills@threejs-game-skills" }
+        }
     } -FileCopyBlock {
         Install-SkillsFileCopy -TargetDir $codexSkills -Label "Codex"
     }
@@ -238,6 +243,9 @@ if ($Codex) {
 if ($OpenCode) {
     $openCodeSkills = if ($env:XDG_CONFIG_HOME) { Join-Path $env:XDG_CONFIG_HOME "opencode\skills" } else { Join-Path $homeDir ".config\opencode\skills" }
     Install-NativePlugin -AgentName "opencode" -ClrName "OpenCode" -InstallBlock {
+        if ($Force) {
+            opencode plugin -r $openCodePluginSpec 2>$null
+        }
         # Always use --force so the cached package is updated to latest;
         # without it, opencode plugin -g skips the update when a cached
         # version already exists, leaving stale plugin code in place.
@@ -260,12 +268,9 @@ if ($Cursor) {
         New-Item -ItemType Directory -Path $cursorRulesTarget -Force | Out-Null
         Get-ChildItem -Path $cursorSourceRules -Filter "*.mdc" | ForEach-Object {
             $dest = Join-Path $cursorRulesTarget $_.Name
-            if ((Test-Path $dest) -and (-not $Force)) {
-                Write-Host "  Skipped $($_.Name) (already exists, use -Force to overwrite)"
-                return
-            }
+            $action = if (Test-Path $dest) { if ($Force) { "Reinstalling" } else { "Updating" } } else { "Installing" }
             Copy-Item -Path $_.FullName -Destination $dest -Force
-            Write-Host "  Installed $($_.Name) -> $dest"
+            Write-Host "  ${action} $($_.Name) -> $dest"
         }
     } else {
         Write-Warning "Cursor rules source not found: $cursorSourceRules"
@@ -274,13 +279,10 @@ if ($Cursor) {
     if (Test-Path $cursorSourceMcp) {
         $mcpDest = Join-Path $cursorMcpTarget "mcp.json"
         Write-Host "Installing Cursor MCP config"
-        if ((Test-Path $mcpDest) -and (-not $Force)) {
-            Write-Host "  Skipped mcp.json (already exists at $mcpDest, use -Force to overwrite or merge manually)"
-        } else {
-            New-Item -ItemType Directory -Path $cursorMcpTarget -Force | Out-Null
-            Copy-Item -Path $cursorSourceMcp -Destination $mcpDest -Force
-            Write-Host "  Installed mcp.json -> $mcpDest"
-        }
+        $mcpAction = if (Test-Path $mcpDest) { if ($Force) { "Reinstalling" } else { "Updating" } } else { "Installing" }
+        New-Item -ItemType Directory -Path $cursorMcpTarget -Force | Out-Null
+        Copy-Item -Path $cursorSourceMcp -Destination $mcpDest -Force
+        Write-Host "  ${mcpAction} mcp.json -> $mcpDest"
     }
 }
 
