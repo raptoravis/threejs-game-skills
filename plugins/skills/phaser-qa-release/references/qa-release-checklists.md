@@ -14,6 +14,18 @@ Use this reference for QA verification and release readiness of Phaser 2D games.
 - [ ] UI elements do not overlap or clip.
 - [ ] Colors and contrast are acceptable on both desktop and mobile screens.
 
+## Headless WebGL Caveats
+
+Phaser renders on WebGL by default (with a Canvas2D fallback). When a Phaser
+game runs on WebGL, the headless-rendering rules below apply; a Canvas2D-fallback
+build has no WebGL FPS to misreport, so its `gpu` block is null and these caveats
+do not change pixel/functional evidence.
+
+- Always launch Chromium with `channel: 'chromium'` (`inspect-phaser-canvas.mjs` does). Playwright's default headless is `chromium_headless_shell`, which ships no GPU backend and silently falls back to SwiftShader (CPU). This is a launch-config bug, not a headless limitation: the shell renders a WebGL scene several times slower than `channel: 'chromium'`, which runs the full Chromium build against the real GPU — one line of config.
+- Verify the GPU before reporting any FPS; never assume it. `inspect-phaser-canvas.mjs` records a `gpu` block (`renderer`, `vendor`, `softwareRendered`) in its JSON report — check it. If `softwareRendered` is true, the run fell back to CPU and its FPS/frame-time numbers are not performance evidence; pixel and functional checks are still valid. Fix the fallback with `npx playwright install chromium` rather than caveating the number.
+- Run Playwright suites with `workers: 1` for WebGL Phaser games. Parallel contexts contend for the GPU, and the frame-time collapse makes game time drift from wall time, flaking timed phases and screenshot baselines.
+- Headless FPS on a verified real GPU is still not a phone. Treat it as a desktop-GPU signal and validate mobile targets on real hardware.
+
 ## Playtest QA
 
 - [ ] Core loop completes: player can achieve the main objective.
