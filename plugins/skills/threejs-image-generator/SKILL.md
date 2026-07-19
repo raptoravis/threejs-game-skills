@@ -1,6 +1,6 @@
 ---
 name: threejs-image-generator
-description: "Generate and edit 2D image assets for Three.js games using Google's Gemini image API. Use for concept sheets, image-to-3D inputs, texture references, sky/background plates, decals, logos, icons, GUI art, title/menu art, thumbnails, marketing stills, and source images that feed threejs-3d-generator. Also use for direct image editing when the user provides an image path."
+description: "Generate and edit 2D image assets for Three.js games using ARK (Doubao/Seedream) or Google Gemini image API. Providers are tried in the order their keys appear in ~/.env. Use for concept sheets, image-to-3D inputs, texture references, sky/background plates, decals, logos, icons, GUI art, title/menu art, thumbnails, marketing stills, and source images that feed threejs-3d-generator. Also use for direct image editing when the user provides an image path."
 ---
 
 # Three.js Image Generator
@@ -9,7 +9,14 @@ description: "Generate and edit 2D image assets for Three.js games using Google'
 
 Create game-useful 2D assets and references for Three.js projects. This skill is the image-generation layer for the Three.js game system: it produces concepts, textures, decals, UI art, and 2D inputs that can be handed to `threejs-3d-generator` for image-to-3D model creation.
 
-Provider: Google's Gemini image API.
+**Providers** (tried in the order their keys appear in `~/.env`):
+
+| Provider | API | Model |
+|----------|-----|-------|
+| `ark` | 火山引擎方舟 ARK | `ARK_IMAGE_MODEL` (default: `doubao-seedream-5-0-pro-260628`) |
+| `gemini` | Google Gemini | `gemini-3-pro-image-preview` |
+
+The first provider whose key appears in `~/.env` is tried first. If it fails (quota, error), the next provider is tried automatically. Use `--provider` to force a specific provider.
 
 Resolve `<this-skill-dir>` in the commands below in this order: `~/.claude/skills/threejs-image-generator`, `~/.codex/skills/threejs-image-generator`, `~/.agents/skills/threejs-image-generator`, or repo `skills/threejs-image-generator`.
 
@@ -25,24 +32,59 @@ Use this skill before procedural-only fallback when a Three.js game needs:
 
 For premium/AAA/showcase graphics work, generate at least one relevant image for high-value 2D surfaces or image-to-3D inputs unless the credential probe or a real generation attempt shows a blocker.
 
-## API Key
+## API Keys
 
-Never store API keys in skill files or browser/game code, and never paste a key value into a report. The script reads `--api-key` or `GEMINI_API_KEY`.
-
-Step 0, before declaring the key unavailable: run this skill's own probe and paste its literal output into the report.
+The script **automatically loads `~/.env`** on startup. Define your keys there:
 
 ```bash
-uv run <this-skill-dir>/scripts/generate_image.py probe   # prints GEMINI_API_KEY=SET|MISSING
+# ~/.env — order of keys determines provider priority (first = primary)
+ARK_API_KEY=ark-xxxxxxxxxxxx
+ARK_IMAGE_MODEL=doubao-seedream-5-0-pro-260628   # optional, this is the default
+GEMINI_API_KEY=xxxxxxxxxxxx
 ```
 
-`GEMINI_API_KEY=MISSING` is only a valid skip/blocker reason when this output is shown. Keys defined only in a shell profile can be absent from the process env; if the plain probe prints MISSING unexpectedly, wrap it: `zsh -lc 'source ~/.zprofile 2>/dev/null || true; source ~/.zshrc 2>/dev/null || true; uv run <this-skill-dir>/scripts/generate_image.py probe'`. When the director skill is loaded, prefer `threejs-game-director/scripts/probe_asset_credentials.sh`, which probes all three asset keys at once.
+**Provider priority** follows the order the `*_API_KEY` lines appear in `~/.env`. In the example above, ARK is listed first → ARK is tried first. If ARK fails (quota exhausted, error), the script falls back to Gemini automatically.
+
+Never store API keys in skill files or browser/game code, and never paste a key value into a report.
+
+### Ark (火山引擎方舟)
+
+- Register at [火山引擎方舟控制台](https://console.volcengine.com/ark) and create an API key.
+- Set `ARK_API_KEY` in `~/.env`.
+- Optionally set `ARK_IMAGE_MODEL` to a specific Seedream model (default: `doubao-seedream-5-0-pro-260628`).
+- Supported resolutions: `1K`, `2K`, `4K`.
+
+### Gemini
+
+- Register at [Google AI Studio](https://aistudio.google.com/apikey) and create an API key.
+- Set `GEMINI_API_KEY` in `~/.env`.
+
+Step 0, before declaring any key unavailable: run this skill's own probe and paste its literal output into the report.
+
+```bash
+uv run <this-skill-dir>/scripts/generate_image.py probe
+# prints:
+#   ARK_API_KEY=SET
+#   GEMINI_API_KEY=SET
+#   PROVIDER_ORDER=ark,gemini
+```
+
+A `MISSING` status is only a valid skip/blocker reason when this output is shown.
 
 ## Tool Script
 
 Run from the user's current project directory so output lands in the game project:
 
 ```bash
+# Uses provider priority from ~/.env (first key wins)
 uv run <this-skill-dir>/scripts/generate_image.py --prompt "your image description" --filename assets/concepts/output.png --resolution 2K
+```
+
+Force a specific provider:
+
+```bash
+uv run <this-skill-dir>/scripts/generate_image.py --prompt "..." --filename output.png --provider ark
+uv run <this-skill-dir>/scripts/generate_image.py --prompt "..." --filename output.png --provider gemini
 ```
 
 Edit an existing image:
