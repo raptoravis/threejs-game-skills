@@ -142,7 +142,7 @@ Never commit API keys or put them in browser-side game code. These skills use pr
 | Provider | Skill | Environment variable | Use cases | Key setup |
 | --- | --- | --- | --- | --- |
 | Tripo API | `threejs-3d-generator` | `TRIPO_API_KEY` | Text/image/multiview to 3D, game-ready GLB/FBX hero models, vehicles, props, buildings, weapons, textures, rigging, animation, stylization, mesh conversion, post-processing. | [Tripo quick start](https://platform.tripo3d.ai/docs/quick-start) and [Tripo API overview](https://www.tripo3d.ai/api). |
-| Gemini image API | `threejs-image-generator` | `GEMINI_API_KEY` | Concept art, image-to-3D source images, texture references, decals, skies, backgrounds, icons, logos, GUI art, title/menu art. | [Gemini API key docs](https://ai.google.dev/gemini-api/docs/api-key) and [Google AI Studio keys](https://aistudio.google.com/app/apikey). |
+| Image generation (`*_IMAGEGEN_MODEL`) | `threejs-image-generator` | `{PREFIX}_API_KEY` + `{PREFIX}_IMAGEGEN_MODEL` | Concept art, image-to-3D source images, texture references, decals, skies, backgrounds, icons, logos, GUI art, title/menu art. Multi-provider: Dashscope (qwen), Ark/Volcengine (doubao), Gemini, or any OpenAI-compatible API. Priority follows `~/.env` declaration order. Falls back to `GEMINI_API_KEY` for legacy mode. | [Dashscope API keys](https://dashscope.console.aliyun.com/apiKey), [Ark/Volcengine keys](https://console.volcengine.com/ark/), [Gemini API key docs](https://ai.google.dev/gemini-api/docs/api-key). |
 | ElevenLabs API | `threejs-audio-generator` | `ELEVENLABS_API_KEY` | SFX, ambience loops, UI sounds, announcer lines, dialogue TTS, voice conversion, audio cleanup, game audio manifests. | [ElevenLabs quickstart](https://elevenlabs.io/docs/eleven-api/quickstart) and [API authentication](https://elevenlabs.io/docs/api-reference/authentication). |
 
 Set keys in your shell profile, then restart your terminal.
@@ -151,8 +151,16 @@ macOS/Linux with `zsh` or `bash`:
 
 ```bash
 export TRIPO_API_KEY="..."
-export GEMINI_API_KEY="..."
 export ELEVENLABS_API_KEY="..."
+
+# Image generation — pick one or more providers (first declared wins)
+export DASHSCOPE_API_KEY="sk-..."
+export DASHSCOPE_IMAGEGEN_MODEL="qwen-image2-pro"
+export ARK_API_KEY="ark-..."
+export ARK_IMAGEGEN_MODEL="doubao-seedream-5-0-pro-260628"
+
+# Legacy: Gemini standalone (no *_IMAGEGEN_MODEL needed)
+export GEMINI_API_KEY="..."
 ```
 
 For `zsh`, put those lines in `~/.zshrc` or `~/.zprofile`. For `bash`, put them in `~/.bashrc` or `~/.bash_profile`.
@@ -161,16 +169,32 @@ Windows PowerShell, current terminal session only:
 
 ```powershell
 $env:TRIPO_API_KEY = "..."
-$env:GEMINI_API_KEY = "..."
 $env:ELEVENLABS_API_KEY = "..."
+
+# Image generation — pick one or more providers (first declared wins)
+$env:DASHSCOPE_API_KEY = "sk-..."
+$env:DASHSCOPE_IMAGEGEN_MODEL = "qwen-image2-pro"
+$env:ARK_API_KEY = "ark-..."
+$env:ARK_IMAGEGEN_MODEL = "doubao-seedream-5-0-pro-260628"
+
+# Legacy: Gemini standalone
+$env:GEMINI_API_KEY = "..."
 ```
 
 Windows PowerShell, persistent for your user account:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("TRIPO_API_KEY", "...", "User")
-[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "...", "User")
 [Environment]::SetEnvironmentVariable("ELEVENLABS_API_KEY", "...", "User")
+
+# Image generation — pick one or more providers (first declared wins)
+[Environment]::SetEnvironmentVariable("DASHSCOPE_API_KEY", "sk-...", "User")
+[Environment]::SetEnvironmentVariable("DASHSCOPE_IMAGEGEN_MODEL", "qwen-image2-pro", "User")
+[Environment]::SetEnvironmentVariable("ARK_API_KEY", "ark-...", "User")
+[Environment]::SetEnvironmentVariable("ARK_IMAGEGEN_MODEL", "doubao-seedream-5-0-pro-260628", "User")
+
+# Legacy: Gemini standalone
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "...", "User")
 ```
 
 After setting persistent Windows variables, restart your terminal, Codex, or Claude Code so the agent process can see the new environment.
@@ -184,9 +208,9 @@ bash ~/.agents/skills/threejs-game-director/scripts/probe_asset_credentials.sh
 Provider notes:
 
 - Tripo is optional but useful for high-value 3D surfaces that procedural code alone rarely makes premium: hero vehicles, bosses, weapons, buildings, creatures, props, and textured GLB/FBX assets.
-- Gemini image generation is optional but useful before Tripo image-to-3D and for high-quality texture, sky, icon, logo, decal, and GUI sources.
+- Image generation is optional but useful before Tripo image-to-3D and for high-quality texture, sky, icon, logo, decal, and GUI sources. Configure via `{PREFIX}_IMAGEGEN_MODEL` + `{PREFIX}_API_KEY` pairs. Providers are tried in `~/.env` declaration order. Falls back to `GEMINI_API_KEY` (legacy mode).
 - ElevenLabs is optional but useful for making games feel finished through interaction SFX, ambience, UI feedback, voice, and cleanup.
-- Google also supports `GOOGLE_API_KEY`, but these skills standardize on `GEMINI_API_KEY` for clarity.
+- Google also supports `GOOGLE_API_KEY`, but these skills standardize on `GEMINI_API_KEY` for clarity (legacy fallback).
 - Use provider-side key restrictions and quotas where available. ElevenLabs documents endpoint scopes, credit quotas, and secret-key handling; Google recommends environment variables and is migrating Gemini users toward auth keys.
 
 ## Best Entry Points
@@ -198,7 +222,7 @@ Provider notes:
 - Use `threejs-debug-profiler` for black screens, runtime errors, loading issues, resize/mobile bugs, performance, draw calls, triangles, textures, and memory.
 - Use `threejs-qa-release` for production builds, browser verification, screenshots, canvas pixels, mobile checks, release risk reports, and static-hosting readiness.
 - Use `threejs-3d-generator` for Tripo API text/image-to-3D models, texture, rigging, animation, conversion, and GLB/FBX game assets.
-- Use `threejs-image-generator` for Gemini-generated concepts, image-to-3D inputs, textures, decals, skies, backgrounds, icons, logos, GUI art, and title/menu art.
+- Use `threejs-image-generator` for AI-generated concepts, image-to-3D inputs, textures, decals, skies, backgrounds, icons, logos, GUI art, and title/menu art. Multi-provider: Dashscope, Ark/Volcengine, Gemini, or any OpenAI-compatible API.
 - Use `threejs-audio-generator` for ElevenLabs SFX, ambience, UI sounds, voice/TTS, voice conversion, cleanup, and Three.js audio integration.
 
 For most user-facing game requests, start with `threejs-game-director` and let it pull in the specialists.
@@ -266,7 +290,7 @@ Premium/AAA claims should not rely on a static scene, placeholder cubes, generic
 - `threejs-debug-profiler`: scene/runtime/render bugs, mobile bugs, performance profiling, renderer metrics.
 - `threejs-qa-release`: browser QA, screenshots, canvas pixels, responsive checks, production build, release risk report.
 - `threejs-3d-generator`: Tripo API text/image-to-3D, texture, auto-rig, animation, conversion, download, and Three.js import guidance.
-- `threejs-image-generator`: Gemini image generation for concepts, textures, decals, skies, icons, GUI art, and image-to-3D inputs.
+- `threejs-image-generator`: AI image generation (multi-provider) for concepts, textures, decals, skies, icons, GUI art, and image-to-3D inputs.
 - `threejs-audio-generator`: ElevenLabs-backed SFX, ambience, UI sounds, voice/TTS, voice conversion, cleanup, and Three.js audio integration.
 
 ## Packaged Resources

@@ -178,7 +178,11 @@ def has_audio_output_evidence(text: str) -> bool:
 
 
 def has_external_blocker(text: str) -> bool:
-    both_credentials_missing = "tripo_api_key=missing" in text and "gemini_api_key=missing" in text
+    tripo_missing = "tripo_api_key=missing" in text
+    gemini_missing = "gemini_api_key=missing" in text
+    imagegen_missing = "imagegen_providers=missing" in text
+    image_credentials_missing = gemini_missing and imagegen_missing
+    both_credentials_missing = tripo_missing and image_credentials_missing
     non_credential_blocker = any(marker in text for marker in NON_CREDENTIAL_BLOCKER_MARKERS)
     return both_credentials_missing or non_credential_blocker
 

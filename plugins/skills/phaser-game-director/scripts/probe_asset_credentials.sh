@@ -15,6 +15,25 @@ PROBE_SNIPPET='
   report_key TRIPO_API_KEY "${TRIPO_API_KEY:-}"
   report_key GEMINI_API_KEY "${GEMINI_API_KEY:-}"
   report_key ELEVENLABS_API_KEY "${ELEVENLABS_API_KEY:-}"
+
+  # Discover *_IMAGEGEN_MODEL providers
+  imagen_providers=""
+  for var in $(printenv | awk -F= '\''/_IMAGEGEN_MODEL=/{print $1}'\''); do
+    eval "val=\$$var"
+    prefix="${var%_IMAGEGEN_MODEL}"
+    if [ -n "$val" ] && [ -n "$prefix" ]; then
+      if [ -z "$imagen_providers" ]; then
+        imagen_providers="$prefix"
+      else
+        imagen_providers="$imagen_providers $prefix"
+      fi
+    fi
+  done
+  if [ -n "$imagen_providers" ]; then
+    printf "IMAGEGEN_PROVIDERS=%s\n" "$imagen_providers"
+  else
+    printf "IMAGEGEN_PROVIDERS=MISSING\n"
+  fi
 '
 
 if command -v zsh >/dev/null 2>&1; then

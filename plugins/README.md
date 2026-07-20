@@ -15,7 +15,7 @@ Self-contained skills for building playable, polished Three.js 3D and Phaser 2D 
 | `threejs-debug-profiler` | Scene/runtime/render bugs, mobile bugs, performance profiling |
 | `threejs-qa-release` | Browser QA, screenshots, canvas pixels, responsive checks, production build |
 | `threejs-3d-generator` | Tripo API text/image-to-3D, texture, auto-rig, animation, conversion |
-| `threejs-image-generator` | Gemini image generation for concepts, textures, decals, icons, GUI art (shared: 3D + 2D) |
+| `threejs-image-generator` | AI image generation (multi-provider) for concepts, textures, decals, icons, GUI art (shared: 3D + 2D) |
 | `threejs-audio-generator` | ElevenLabs SFX, ambience, UI sounds, voice/TTS, audio integration (shared: 3D + 2D) |
 
 ### Phaser (2D)

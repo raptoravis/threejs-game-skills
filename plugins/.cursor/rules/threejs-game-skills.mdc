@@ -33,7 +33,7 @@ When users request game development work, load the relevant skill files from `pl
 | `threejs-debug-profiler` | Scene/runtime/render bugs, mobile bugs, performance profiling |
 | `threejs-qa-release` | Browser QA, screenshots, canvas pixels, responsive checks, production build |
 | `threejs-3d-generator` | Tripo API text/image-to-3D, texture, auto-rig, animation, conversion |
-| `threejs-image-generator` | Gemini image generation for concepts, textures, decals, icons, GUI art (shared: 3D + 2D) |
+| `threejs-image-generator` | AI image generation (multi-provider) for concepts, textures, decals, icons, GUI art (shared: 3D + 2D) |
 | `threejs-audio-generator` | ElevenLabs SFX, ambience, UI sounds, voice/TTS, audio integration (shared: 3D + 2D) |
 
 ### Phaser (2D)
@@ -119,7 +119,7 @@ For meaningful Three.js changes, gather evidence before claiming success:
 - Use `threejs-debug-profiler` for black screens, runtime errors, loading issues, resize/mobile bugs, performance, draw calls, triangles, textures, and memory.
 - Use `threejs-qa-release` for production builds, browser verification, screenshots, canvas pixels, mobile checks, release risk reports, and static-hosting readiness.
 - Use `threejs-3d-generator` for Tripo API text/image-to-3D models, texture, rigging, animation, conversion, and GLB/FBX game assets.
-- Use `threejs-image-generator` for Gemini-generated concepts, image-to-3D inputs, textures, decals, skies, backgrounds, icons, logos, GUI art, and title/menu art.
+- Use `threejs-image-generator` for AI-generated concepts, image-to-3D inputs, textures, decals, skies, backgrounds, icons, logos, GUI art, and title/menu art. Multi-provider via `*_IMAGEGEN_MODEL` env vars.
 - Use `threejs-audio-generator` for ElevenLabs SFX, ambience, UI sounds, voice/TTS, voice conversion, cleanup, and Three.js audio integration.
 
 For most user-facing game requests, start with `threejs-game-director` and let it pull in the specialists.
@@ -133,7 +133,7 @@ This plugin includes MCP server configuration for Playwright (browser automation
 | Provider | Skill | Environment variable | Use cases |
 | --- | --- | --- | --- |
 | Tripo API | `threejs-3d-generator` | `TRIPO_API_KEY` | Text/image/multiview to 3D, GLB/FBX hero models, rigging, animation |
-| Gemini image API | `threejs-image-generator` | `GEMINI_API_KEY` | Concept art, textures, decals, skies, icons, logos, GUI art |
+| Image generation (`*_IMAGEGEN_MODEL`) | `threejs-image-generator` | `{PREFIX}_API_KEY` + `{PREFIX}_IMAGEGEN_MODEL` | Concept art, textures, decals, skies, icons, logos, GUI art |
 | ElevenLabs API | `threejs-audio-generator` | `ELEVENLABS_API_KEY` | SFX, ambience, UI sounds, voice/TTS, audio cleanup |
 
 Never commit API keys or put them in browser-side game code.

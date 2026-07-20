@@ -1,6 +1,6 @@
 # Three.js Image Generator Pairing
 
-Use `threejs-image-generator` when a strong 2D input improves `threejs-3d-generator` output or when the final asset is 2D rather than 3D. The current image provider is Google's Gemini image API.
+Use `threejs-image-generator` when a strong 2D input improves `threejs-3d-generator` output or when the final asset is 2D rather than 3D. Providers are auto-discovered from `*_IMAGEGEN_MODEL` env vars; see `threejs-image-generator/SKILL.md` for setup.
 
 ## 2D To 3D Reference Images
 
