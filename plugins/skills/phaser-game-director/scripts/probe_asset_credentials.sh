@@ -38,11 +38,13 @@ PROBE_SNIPPET='
 
 if command -v zsh >/dev/null 2>&1; then
   zsh -lc '
+    set -a && source "$HOME/.env" 2>/dev/null && set +a || true
     source "$HOME/.zprofile" >/dev/null 2>&1 || true
     source "$HOME/.zshrc" >/dev/null 2>&1 || true
     '"$PROBE_SNIPPET"
 else
   bash -lc '
+    set -a && source "$HOME/.env" 2>/dev/null && set +a || true
     source "$HOME/.bash_profile" >/dev/null 2>&1 || true
     source "$HOME/.bashrc" >/dev/null 2>&1 || true
     '"$PROBE_SNIPPET"

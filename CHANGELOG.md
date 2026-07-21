@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.4.1
+
+- **All generator scripts**: `threejs_3d_asset.py` and `threejs_audio_asset.py` now auto-load `~/.env` at startup (same pattern as `generate_image.py`), so `TRIPO_API_KEY` and `ELEVENLABS_API_KEY` are picked up without manual `export`.
+- **All probe scripts**: Three.js, Babylon, and Phaser director `probe_asset_credentials.sh` now source `~/.env` directly before checking keys, covering dash/headless environments where shell profiles are absent.
+- **Babylon 3D/audio wrappers**: automatically inherit the `.env` loading from the Three.js scripts they delegate to.
+
+## 1.4.0
+
+- **Babylon.js**: full engine skill set — 9 skills (director, gameplay, AAA graphics, debug, QA, UI, 3D generator, image generator, audio generator) plus scaffold, all mirroring the Three.js skill architecture.
+
 ## 1.3.0
 
 - **Image generator**: multi-provider support via `*_IMAGEGEN_MODEL` env vars — auto-discovers providers from `~/.env` with first-declared-wins priority. Supports Gemini (native), Dashscope (qwen-image2), Ark/Volcengine (doubao-seedream), and any OpenAI-compatible Images API.

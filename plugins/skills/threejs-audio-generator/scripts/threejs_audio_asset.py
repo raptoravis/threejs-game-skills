@@ -15,6 +15,32 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+# ---------------------------------------------------------------------------
+# .env loading — run before anything that reads os.environ
+# ---------------------------------------------------------------------------
+
+_HOME_ENV = Path.home() / ".env"
+
+
+def _load_dotenv_from_home() -> None:
+    """Load key=value pairs from ~/.env into os.environ (only if not already set)."""
+    if not _HOME_ENV.exists():
+        return
+    try:
+        with open(_HOME_ENV, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    key, _, value = line.partition("=")
+                    key = key.strip()
+                    value = value.strip()
+                    if key and value and key not in os.environ:
+                        os.environ[key] = value
+    except Exception:
+        pass
+
 
 BASE_URL = "https://api.elevenlabs.io/v1"
 DEFAULT_OUTPUT_FORMAT = "mp3_44100_128"
@@ -291,6 +317,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    _load_dotenv_from_home()
     parser = build_parser()
     args = parser.parse_args()
     try:
