@@ -1,16 +1,17 @@
 # Agent Instructions
 
-This repo contains plugin assets for Three.js and Phaser browser-game development, organized for Claude Code, Codex, OpenCode, Reasonix, and Cursor.
+This repo contains plugin assets for Three.js, Phaser, and Babylon.js browser-game development, organized for Claude Code, Codex, OpenCode, Reasonix, and Cursor.
 
 ## Engine Routing
 
 Route game requests by engine based on genre and user intent:
 
 - **Three.js (3D)**: FPS, racing, flight combat, 3D platformer, third-person action, endless runner (3D), physics puzzles (3D), survival/crafting (3D).
+- **Babylon.js (3D)**: FPS, racing, flight combat, 3D platformer, third-person action, endless runner (3D), physics puzzles (3D), survival/crafting (3D). When the user requests "babylon", "babylonjs", or "babylon.js", route to `babylon-game-director`.
 - **Phaser (2D)**: 2D platformer, RPG (top-down/isometric), tower defense, card game, bullet hell / shoot-em-up, RTS, narrative games, SLG/strategy.
 - **Ambiguous requests**: If the user does not name an engine, ask "3D or 2D?" or infer from genre keywords (橫版=Phaser, 第一人称=Three.js, 卡牌=Phaser, 赛车=Three.js, etc.).
-- **Explicit engine requests**: "use threejs", "use phaser", "3D game", "2D game" → route to the matching director.
-- **Coexistence**: Both engine skill sets coexist. Do not delete or degrade Three.js skills when adding Phaser skills, and vice versa.
+- **Explicit engine requests**: "use threejs", "use babylon", "use phaser", "3D game", "2D game" → route to the matching director.
+- **Coexistence**: All three engine skill sets coexist. Do not delete or degrade Three.js skills when adding Phaser or Babylon skills, and vice versa.
 
 ## Default Technical Stack (Three.js)
 
@@ -131,3 +132,59 @@ For meaningful Phaser 2D changes, gather evidence before claiming success:
 - 2D visual scorecard before/after when the user asks for premium, showcase, or "less basic" graphics
 
 Use the scaffold's `npm run verify:visual` and `npm run inspect:canvas` when available, or `plugins/skills/phaser-qa-release/scripts/inspect-phaser-canvas.mjs` from this repo.
+
+## Default Technical Stack (Babylon.js)
+
+- Prefer TypeScript, Vite, npm package imports, and `@babylonjs/core` modules.
+- Use `BABYLON.Engine` for WebGL/WebGPU context creation.
+- Use `BABYLON.Scene` for scene graph management.
+- Use `BABYLON.ArcRotateCamera` for orbit/third-person; `BABYLON.UniversalCamera` for FPS.
+- Use `BABYLON.HemisphericLight` for ambient/ground fill; `BABYLON.DirectionalLight` with `BABYLON.ShadowGenerator` for key light.
+- Use Havok (`@babylonjs/havok`) as the default robust 3D physics engine.
+- Use Cannon.js (`cannon-es` with `@babylonjs/core` CannonJSPlugin) only as a lightweight JS fallback.
+- Use `BABYLON.PBRMaterial` for physically-based rendering; `BABYLON.StandardMaterial` for simpler materials.
+- Use Node Material Editor for visual shader authoring; serialize as JSON for runtime.
+- Use `BABYLON.DefaultRenderingPipeline` for post-processing (SSAO, bloom, DOF, sharpen, chromatic aberration).
+- Use `BABYLON.GUI` (`@babylonjs/gui`) for in-game UI; DOM overlay for text-heavy/accessible HUDs.
+- Use `lil-gui` for local tuning; Babylon Inspector (`scene.debugLayer.show()`) for scene debugging.
+- Use `@babylonjs/loaders` for glTF/GLB/FBX/OBJ asset loading.
+- Keep scene setup, loop, input, systems, entities, UI, assets, and debug tools separated.
+
+## Game Quality Bar (Babylon.js)
+
+- For broad requests to build, upgrade, polish, or finish a Babylon.js game, route through `babylon-game-director` first.
+- Public Babylon.js skills are consolidated around the director plus specialist systems: gameplay, AAA graphics, UI, debug/profile, QA/release, 3D generation, image generation, and audio generation.
+- In Claude-style skill runners, the director must attempt to load sibling public `SKILL.md` files first, report a skill-loading ledger, and use the bundled phase OS only for files that cannot be loaded.
+- For broad/premium director work, the director must load each phase's required `references/*.md` files at phase entry and report a reference ledger.
+- Premium/AAA/showcase claims must include the filled visual scorecard from `plugins/skills/babylon-aaa-graphics-builder/references/visual-scorecard.md`.
+- When shell tools are available, run `plugins/skills/babylon-game-director/scripts/audit_reference_report.py --premium <report.md>`.
+- Build a playable loop first. A static scene is not done.
+- Keep Engine, Scene, systems, entities, UI, assets, and debug tools separated.
+- Tune movement, camera, collisions, feedback, and HUD through short playtest loops.
+- For physics-heavy games, report Havok/Cannon.js choice, timestep, impostor strategy, body count, and restart cleanup evidence.
+- Avoid decorative-only UI, generic purple gradients, particle clutter, and unchecked post-processing.
+- Keep mobile input and resize behavior in the first implementation path.
+- Use `babylon-aaa-graphics-builder` when screenshots still look basic.
+- For premium work with characters, vehicles, ships, weapons, buildings, props, skies, textures, decals, logos, icons, GUI art, SFX, ambience, or voice, load relevant generator skills before deciding procedural/generated assets are unnecessary.
+- Run the director credential probe before claiming credentials are unavailable.
+- Require active-play screenshot scoring for premium/AAA claims.
+
+## Verification Bar (Babylon.js)
+
+For meaningful Babylon.js changes, gather evidence before claiming success:
+
+- `npm run build`
+- a local dev or preview server opened in a browser
+- browser console and page error check
+- Playwright screenshot
+- canvas nonblank pixel check via `inspect-babylon-canvas.mjs`
+- at least one desktop and one mobile viewport
+- interaction check for the main control path
+- performance snapshot when mesh counts, material counts, shadow maps, or post-processing changed
+- UI text-fit, overlap, safe-area, and touch-target evidence when interface layout changed
+- renderer diagnostics when procedural model fidelity, material count, or repeated props changed
+- external asset sourcing ledger when premium graphics include high-value 3D asset categories
+- credential probe output plus real external asset outputs or blocker evidence for premium asset-category claims
+- visual scorecard before/after when the user asks for premium, AAA, showcase, or "less basic" graphics
+
+Use the scaffold's `npm run verify:visual` and `npm run inspect:canvas` when available, or `plugins/skills/babylon-qa-release/scripts/inspect-babylon-canvas.mjs` from this repo.

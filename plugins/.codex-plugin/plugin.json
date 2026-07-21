@@ -1,7 +1,7 @@
 {
   "name": "threejs-game-skills",
-  "version": "1.3.0",
-  "description": "Self-contained skills for building playable, polished Three.js browser games.",
+  "version": "1.4.0",
+  "description": "Self-contained skills for building playable, polished Three.js, Phaser, and Babylon.js browser games.",
   "author": {
     "name": "raptoravis",
     "url": "https://github.com/raptoravis"
@@ -11,6 +11,8 @@
   "license": "MIT",
   "keywords": [
     "threejs",
+    "babylonjs",
+    "phaser",
     "game-development",
     "browser-games",
     "3d-graphics",
@@ -20,15 +22,16 @@
   "mcpServers": "./.mcp.json",
   "skills": "./skills",
   "interface": {
-    "displayName": "Three.js Game Skills",
-    "shortDescription": "Skills for building playable, polished Three.js browser games.",
-    "longDescription": "A suite of self-contained skills for building complete Three.js browser games. Includes threejs-game-director (orchestration), threejs-gameplay-systems (mechanics), threejs-aaa-graphics-builder (visuals), threejs-game-ui-designer (HUD/menus), threejs-debug-profiler, threejs-qa-release, threejs-3d-generator, threejs-image-generator, and threejs-audio-generator.",
+    "displayName": "Three.js + Babylon.js + Phaser Game Skills",
+    "shortDescription": "Skills for building playable, polished browser games with Three.js, Babylon.js, and Phaser.",
+    "longDescription": "A suite of self-contained skills for building complete browser games. Includes threejs-game-director (orchestration), threejs-gameplay-systems, threejs-aaa-graphics-builder, threejs-game-ui-designer, threejs-debug-profiler, threejs-qa-release, threejs-3d-generator, threejs-image-generator, threejs-audio-generator; babylon-game-director, babylon-gameplay-systems, babylon-aaa-graphics-builder, babylon-debug-profiler, babylon-qa-release, babylon-3d-generator, babylon-image-generator, babylon-audio-generator, babylon-game-ui-designer; and phaser-game-director, phaser-gameplay-systems, phaser-2d-graphics-builder, phaser-debug-profiler, phaser-qa-release.",
     "developerName": "Raptoravis",
     "category": "Game Development",
     "capabilities": ["Interactive", "Read", "Write"],
     "websiteURL": "https://github.com/raptoravis/threejs-game-skills",
     "defaultPrompt": [
       "Use threejs-game-director to build a premium game from scratch",
+      "Use babylon-game-director to build a premium Babylon.js 3D game from scratch",
       "Use threejs-game-director to upgrade this game's visuals",
       "Use threejs-game-director to debug and finish this game"
     ]

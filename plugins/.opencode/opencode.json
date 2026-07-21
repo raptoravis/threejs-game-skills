@@ -26,6 +26,18 @@
     "upgrade-phaser-graphics": {
       "template": "Use phaser-game-director to upgrade this 2D game's visuals to premium quality.\nLoad phaser-2d-graphics-builder for visual upgrade workflows, sprites, tilemaps, particles, and the 2D visual scorecard.\n\n$ARGUMENTS",
       "description": "Upgrade Phaser 2D game visuals to premium quality"
+    },
+    "build-babylon-game": {
+      "template": "Use babylon-game-director to build a premium 3D game from scratch.\nFollow the director's phase OS: scaffold, implement gameplay loop, add visuals, design UI, debug, QA, and release.\n\n$ARGUMENTS",
+      "description": "Build a complete Babylon.js 3D game using the game director"
+    },
+    "upgrade-babylon-graphics": {
+      "template": "Use babylon-game-director to upgrade this 3D game's visuals to premium/AAA quality.\nLoad babylon-aaa-graphics-builder for visual upgrade workflows, PBR materials, Node Material Editor, and the visual scorecard.\n\n$ARGUMENTS",
+      "description": "Upgrade Babylon.js game visuals to premium/AAA quality"
+    },
+    "debug-finish-babylon": {
+      "template": "Use babylon-game-director to debug and finish this Babylon.js game.\nLoad babylon-debug-profiler and babylon-qa-release for debugging, profiling, and release readiness.\n\n$ARGUMENTS",
+      "description": "Debug and finish a Babylon.js game"
     }
   }
 }
