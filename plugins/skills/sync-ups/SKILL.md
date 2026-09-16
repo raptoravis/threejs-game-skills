@@ -59,7 +59,7 @@ do for you.
 | `phaser-2d-graphics-builder` | `threejs-aaa-graphics-builder` |
 | `phaser-debug-profiler` | `threejs-debug-profiler` |
 | `phaser-qa-release` | `threejs-qa-release` |
-| `threejs-gameplay-systems/.../checklists/<genre>-premium-quality.md` (13 local-only 3D genres) | `endless-runner-premium-quality.md` + `game-feel.md` / `game-design-level-design.md` |
+| `threejs-gameplay-systems/.../checklists/<genre>-premium-quality.md` (13 local-only 3D genres) | `genre-design.md` (upstream consolidated the former `endless-runner-premium-quality.md`, `game-feel.md`, `game-design-level-design.md`) |
 | `phaser-gameplay-systems/.../checklists/<genre>-2d-premium-quality.md` (6 local-only 2D genre checklists: card-game-2d, platformer-2d, rpg-2d, rts-2d, tower-defense-2d, plus bullet-hell-premium-quality.md which has no `-2d-` infix) | same, in 2D form |
 
 UI: Phaser reuses `threejs-game-ui-designer` (no Phaser UI skill). Generators:
@@ -82,10 +82,10 @@ Three.js skill that changed, diff it against its Phaser mirror and port
    the universal cross-cutting sections the Three.js genre checklists expect
    (Performance, Mobile, Playtest, Accessibility, Audio, HUD).
 5. **Scripts** — `probe_asset_credentials.sh` is engine-agnostic: keep it
-   byte-identical with the Three.js version. `audit_reference_report.py` mirrors
-   the Three.js structure but uses the 2D scorecard categories and image/audio
-   (not 3D) markers. `inspect-phaser-canvas.mjs` mirrors the pixel-metrics block
-   of `inspect-threejs-canvas.mjs`.
+   byte-identical with the Three.js version. `check_evidence.py` mirrors the
+   Three.js evidence checker (engine-agnostic; only the engine name and
+   `inspect-*-canvas.mjs` script name differ). `inspect-phaser-canvas.mjs` mirrors
+   the pixel-metrics block of `inspect-threejs-canvas.mjs`.
 
 Always preserve Phaser/2D-specific content (Matter.js/Arcade, scene lifecycle,
 FIT scaling, sprite/tilemap/parallax, texture atlases, object pooling). Port the

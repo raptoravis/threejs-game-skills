@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.0
+
+- **Upstream sync** (7221c1f → e5f301d): Three.js skills synced forward — new reference files (`authoring-recipes.md`, `debug-playbook.md`, `genre-design.md`, `release-checks.md`, `asset-recovery.md`, `evidence-manifest.md`, `workflow-evaluations.md`) and a new `check_evidence.py` evidence-audit script (replacing `audit_reference_report.py`). Upstream consolidated its checklists and prompt-template references into these files.
+- **Preserved local features**: re-ported multi-provider image generation (ARK/Dashscope/Gemini/OpenAI-compatible) and `~/.env` auto-loading onto the synced files.
+
 ## 1.4.1
 
 - **All generator scripts**: `threejs_3d_asset.py` and `threejs_audio_asset.py` now auto-load `~/.env` at startup (same pattern as `generate_image.py`), so `TRIPO_API_KEY` and `ELEVENLABS_API_KEY` are picked up without manual `export`.

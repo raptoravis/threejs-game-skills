@@ -109,15 +109,15 @@ Premium, AAA, polished, complete, release-ready, and showcase requests require v
 - Visual test harness decision, and bot playtest evidence when release-ready gameplay is claimed.
 - Final ledgers with evidence and remaining blockers.
 
-## Report Audit
+## Evidence Check
 
-When shell tools are available, draft the final evidence report to a markdown file and audit it before finalizing broad or premium work:
+When shell tools are available, verify the final evidence before finalizing broad or premium work:
 
 ```bash
-python3 <director-skill-dir>/scripts/audit_reference_report.py --premium /path/to/final-report.md
+python3 <director-skill-dir>/scripts/check_evidence.py ./my-game --manifest artifacts/evidence.json
 ```
 
-Use `--premium` for premium/AAA/showcase/high-fidelity/polished/complete/release-ready/"less basic" claims; add `--physics` for Havok/Cannon.js physics-heavy games; add `--audio` when generated or integrated audio is in scope; add `--no-design` only for debug/perf/QA-only reports with no gameplay claims. If the audit fails, fix the missing sections or state the exact blocker instead of claiming completion. If the script is unavailable, manually enforce the same sections listed in Required Verification.
+Before capturing, read `references/evidence-manifest.md` and declare the expected viewport/state pairs for this pass. The checker verifies only that set and its run ID; its result establishes artifact coverage, not aesthetic quality or gameplay correctness. If the script is unavailable, manually confirm each cited screenshot/artifact exists and is non-trivial.
 
 ## Final Response
 
