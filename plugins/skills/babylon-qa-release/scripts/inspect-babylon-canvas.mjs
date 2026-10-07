@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { chromium, devices } from 'playwright';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { PNG } from 'pngjs';
 
@@ -11,37 +11,212 @@ const RENDER_BUDGETS = {
   mobile: { meshes: 400, materials: 80, textures: 40, drawCalls: 150 },
 };
 
-function parseArgs(argv) {
+// Browser errors kept per report: unique messages, truncated. Totals are always counted.
+const MAX_ERRORS = 20;
+const MAX_ERROR_LENGTH = 500;
+
+const USAGE =
+  'Usage: inspect-babylon-canvas.mjs [--url URL] [--out DIR] [--mobile] [--wait MS] [--state NAME] [--seed N] [--run-id ID] [--json]\n' +
+  '       inspect-babylon-canvas.mjs --manifest artifacts/evidence.json [--url URL] [--seed N] [--wait MS] [--json]\n' +
+  '  --manifest captures every declared viewport/state in one browser, writing each report to its declared path.\n' +
+  '  Prints one summary line per capture; full reports are written to disk. --json prints the full reports instead.\n' +
+  '  --wait defaults to 0ms for named states (already frozen) and 750ms for current-view captures.\n' +
+  '  --state requires setState(NAME) to return or resolve {state: NAME}; unknown states must throw.\n' +
+  '  Named captures also require setPausedForScreenshot: stop simulation immediately, keep rendering.\n' +
+  '  --seed requires a seed(N) hook; both hooks are awaited before capture.\n' +
+  '  Preparation, including --wait, hooks, fonts and render frames, has a 10000ms deadline.\n' +
+  '  State names and run IDs use 1-128 letters, digits, dots, underscores or hyphens, starting with a letter or digit.';
+
+function validateIdentifier(value, flag) {
+  if (typeof value !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(value)) {
+    throw new Error(`${flag} must be a safe 1-128 character identifier starting with a letter or digit`);
+  }
+}
+
+export function parseArgs(argv) {
   const args = {
     url: 'http://127.0.0.1:5388',
     out: 'artifacts/canvas-inspection',
     mobile: false,
-    wait: 750,
+    wait: null,
     state: null,
     seed: undefined,
+    runId: null,
+    manifest: null,
+    json: false,
+    help: false,
   };
+  const singleCaptureFlags = [];
 
   for (let i = 0; i < argv.length; i += 1) {
     const value = argv[i];
-    if (value === '--url') args.url = argv[++i];
-    else if (value === '--out') args.out = argv[++i];
-    else if (value === '--mobile') args.mobile = true;
-    else if (value === '--wait') args.wait = Number(argv[++i]);
-    else if (value === '--state') args.state = argv[++i];
-    else if (value === '--seed') args.seed = Number(argv[++i]);
-    else if (value === '-h' || value === '--help') {
-      console.log(
-        'Usage: inspect-babylon-canvas.mjs [--url URL] [--out DIR] [--mobile] [--wait MS] [--state NAME] [--seed N]\n' +
-          '  --state/--seed drive window.__BABYLON_GAME_TEST_HOOKS__ (setState/seed) before capture\n' +
-          '  so specific game states can be measured deterministically.',
-      );
-      process.exit(0);
-    } else {
+    const takeValue = () => {
+      const next = argv[++i];
+      if (typeof next !== 'string' || !next.trim() || next.startsWith('--')) {
+        throw new Error(`Missing value for ${value}`);
+      }
+      return next;
+    };
+    if (value === '--url') args.url = takeValue();
+    else if (value === '--out') { args.out = takeValue(); singleCaptureFlags.push(value); }
+    else if (value === '--mobile') { args.mobile = true; singleCaptureFlags.push(value); }
+    else if (value === '--wait') args.wait = Number(takeValue());
+    else if (value === '--state') { args.state = takeValue(); singleCaptureFlags.push(value); }
+    else if (value === '--seed') args.seed = Number(takeValue());
+    else if (value === '--run-id') { args.runId = takeValue(); singleCaptureFlags.push(value); }
+    else if (value === '--manifest') args.manifest = takeValue();
+    else if (value === '--json') args.json = true;
+    else if (value === '-h' || value === '--help') args.help = true;
+    else {
       throw new Error(`Unknown argument: ${value}`);
     }
   }
 
+  if (args.state !== null) validateIdentifier(args.state, '--state');
+  if (args.runId !== null) validateIdentifier(args.runId, '--run-id');
+  if (args.seed !== undefined && !Number.isSafeInteger(args.seed)) {
+    throw new Error('--seed must be a safe integer');
+  }
+  if (args.wait !== null && (!Number.isFinite(args.wait) || args.wait < 0 || args.wait > 2_147_483_647)) {
+    throw new Error('--wait must be finite non-negative milliseconds within the timer range');
+  }
+  if (!['http:', 'https:'].includes(new URL(args.url).protocol)) {
+    throw new Error('--url must use http or https');
+  }
+  if (args.manifest !== null && singleCaptureFlags.length > 0) {
+    throw new Error(`--manifest declares each capture; remove ${singleCaptureFlags.join(', ')}`);
+  }
+
   return args;
+}
+
+export function settleWait(wait, state) {
+  return wait ?? (state ? 0 : 750);
+}
+
+export function readManifestCaptures(manifest) {
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    throw new Error('manifest must be a JSON object');
+  }
+  if (typeof manifest.runId !== 'string' || !manifest.runId.trim()) throw new Error('manifest requires a runId');
+  validateIdentifier(manifest.runId, 'manifest runId');
+  if (!Array.isArray(manifest.captures) || manifest.captures.length === 0) {
+    throw new Error('manifest requires a nonempty captures list');
+  }
+  return manifest.captures.map((capture, index) => {
+    if (!capture || typeof capture !== 'object') throw new Error(`capture ${index} must be an object`);
+    const { mode, state, report } = capture;
+    if (mode !== 'desktop' && mode !== 'mobile') throw new Error(`capture ${index} mode must be desktop or mobile`);
+    if (!('state' in capture)) throw new Error(`capture ${index} requires state (a name or null)`);
+    if (state !== null) validateIdentifier(state, `capture ${index} state`);
+    if (typeof report !== 'string' || !report.endsWith('.json')) {
+      throw new Error(`capture ${index} report must be a .json path`);
+    }
+    return { mobile: mode === 'mobile', state, runId: manifest.runId, reportPath: report,
+      screenshotPath: report.replace(/\.json$/, '.png') };
+  });
+}
+
+async function runPreparation(page, { state = null, seed, timeoutMs = 10_000, wait = 0 }, capture) {
+  if (state !== null) validateIdentifier(state, '--state');
+  if (seed !== undefined && !Number.isSafeInteger(seed)) throw new Error('--seed must be a safe integer');
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0 || timeoutMs > 2_147_483_647) {
+    throw new Error('Preparation timeout must be positive milliseconds within the timer range');
+  }
+  if (!Number.isFinite(wait) || wait < 0 || wait > 2_147_483_647) {
+    throw new Error('--wait must be finite non-negative milliseconds within the timer range');
+  }
+  if (!capture && state === null && seed === undefined) return { requestedState: null, appliedState: null };
+
+  const message = `${capture ? 'Capture preparation' : 'Test hooks'} did not finish within ${timeoutMs}ms`;
+  const deadline = Date.now() + timeoutMs;
+  let hostTimer;
+  try {
+    return await Promise.race([
+      new Promise((_, reject) => {
+        hostTimer = setTimeout(() => reject(new Error(message)), timeoutMs);
+      }),
+      page.evaluate(async ({ state, seed, capture, wait, deadline, message }) => {
+        const hooks = window.__BABYLON_GAME_TEST_HOOKS__;
+        const namedCapture = capture && state !== null;
+        if ((state !== null || seed !== undefined) && !hooks) {
+          throw new Error('--state/--seed requires window.__BABYLON_GAME_TEST_HOOKS__');
+        }
+        if (state !== null && typeof hooks.setState !== 'function') {
+          throw new Error('--state requires a setState function');
+        }
+        if (seed !== undefined && typeof hooks.seed !== 'function') {
+          throw new Error('--seed requires a seed function');
+        }
+        if (namedCapture && typeof hooks.setPausedForScreenshot !== 'function') {
+          throw new Error('--state capture requires a setPausedForScreenshot function that stops simulation immediately and keeps rendering');
+        }
+
+        let expired = false;
+        let timer;
+        let settleTimer;
+        let frameId;
+        const checkDeadline = () => {
+          if (expired || Date.now() >= deadline) throw new Error(message);
+        };
+        const step = async (operation) => {
+          checkDeadline();
+          const result = await operation();
+          checkDeadline();
+          return result;
+        };
+        try {
+          return await Promise.race([
+            new Promise((_, reject) => {
+              timer = setTimeout(() => {
+                expired = true;
+                reject(new Error(message));
+              }, Math.max(0, deadline - Date.now()));
+            }),
+            (async () => {
+              if (namedCapture) await step(() => hooks.setPausedForScreenshot(false));
+              if (seed !== undefined) await step(() => hooks.seed(seed));
+              if (state !== null) {
+                const acknowledgement = await step(() => hooks.setState(state));
+                if (!acknowledgement || typeof acknowledgement !== 'object' ||
+                    Array.isArray(acknowledgement) || acknowledgement.state !== state) {
+                  throw new Error(`setState(${JSON.stringify(state)}) must acknowledge {state: ${JSON.stringify(state)}}`);
+                }
+                if (namedCapture) await step(() => hooks.setPausedForScreenshot(true));
+              }
+              if (capture) {
+                if (namedCapture && typeof hooks.setReducedMotion === 'function') {
+                  await step(() => hooks.setReducedMotion(true));
+                }
+                if (namedCapture && typeof hooks.hideDebugUi === 'function') {
+                  await step(() => hooks.hideDebugUi(true));
+                }
+                if (wait > 0) await step(() => new Promise((resolve) => { settleTimer = setTimeout(resolve, wait); }));
+                if (document.fonts) await step(() => document.fonts.ready);
+                await step(() => new Promise((resolve) => {
+                  frameId = requestAnimationFrame(() => {
+                    if (!expired) frameId = requestAnimationFrame(resolve);
+                  });
+                }));
+              }
+              return { requestedState: state, appliedState: state };
+            })(),
+          ]);
+        } finally {
+          expired = true;
+          clearTimeout(timer);
+          clearTimeout(settleTimer);
+          if (frameId !== undefined) cancelAnimationFrame(frameId);
+        }
+      }, { state, seed, capture, wait, deadline, message }),
+    ]);
+  } finally {
+    clearTimeout(hostTimer);
+  }
+}
+
+export async function prepareCapture(page, args = {}) {
+  return runPreparation(page, args, true);
 }
 
 const round = (value, digits) => Number(value.toFixed(digits));
@@ -110,9 +285,6 @@ function computePixelMetrics(png) {
   };
 }
 
-// Playwright's default headless is chromium_headless_shell, which ships no GPU
-// backend and silently falls back to SwiftShader (CPU). channel:'chromium' runs
-// the full Chromium build in new headless mode against the real GPU.
 async function launchBrowser() {
   try {
     return await chromium.launch({ channel: 'chromium' });
@@ -126,8 +298,6 @@ async function launchBrowser() {
   }
 }
 
-// Records which GPU actually rasterized the run, so a software fallback can never
-// masquerade as performance evidence again.
 async function readGpuInfo(page) {
   const info = await page.evaluate(() => {
     const canvas = document.querySelector('canvas');
@@ -177,15 +347,41 @@ function checkRenderBudget(diagnostics, mode) {
   };
 }
 
-async function sampleCanvas(page, mode) {
-  const locator = page.locator('canvas').first();
-  const rect = await locator.boundingBox();
+function cropImage(png, rect) {
+  const clamp = (value, max) => Math.min(max, Math.max(0, Math.round(value)));
+  const x0 = clamp(rect.x, png.width);
+  const y0 = clamp(rect.y, png.height);
+  const width = clamp(rect.x + rect.width, png.width) - x0;
+  const height = clamp(rect.y + rect.height, png.height) - y0;
+  const data = Buffer.alloc(Math.max(0, width * height * 4));
+  for (let y = 0; y < height; y += 1) {
+    const from = ((y0 + y) * png.width + x0) * 4;
+    png.data.copy(data, y * width * 4, from, from + width * 4);
+  }
+  return { width, height, data };
+}
+
+// One CSS-scale full-page screenshot serves as both the review image and the
+// canvas sample.
+async function captureCanvas(page, mode, screenshotPath) {
+  const layout = await page.evaluate(() => {
+    const canvas = document.querySelector('canvas');
+    const box = canvas?.getBoundingClientRect();
+    return {
+      rect: box ? { x: box.left + window.scrollX, y: box.top + window.scrollY, width: box.width, height: box.height } : null,
+      drawingBuffer: canvas ? { width: canvas.width, height: canvas.height } : null,
+      game: window.__BABYLON_GAME_DIAGNOSTICS__ ?? null,
+    };
+  });
+  await mkdir(path.dirname(screenshotPath), { recursive: true });
+  const buffer = await page.screenshot({ path: screenshotPath, fullPage: true, scale: 'css' });
+  const { rect } = layout;
   if (!rect || rect.width < 32 || rect.height < 32) {
     return { ok: false, reason: 'canvas-too-small', rect };
   }
 
-  const buffer = await locator.screenshot();
-  const png = PNG.sync.read(buffer);
+  const png = cropImage(PNG.sync.read(buffer), rect);
+  if (png.width < 32 || png.height < 32) return { ok: false, reason: 'canvas-too-small', rect };
   let min = 255;
   let max = 0;
   let alphaPixels = 0;
@@ -205,105 +401,152 @@ async function sampleCanvas(page, mode) {
   }
 
   const variance = max - min;
-  const diagnostics = await page.evaluate(() => {
-    const canvas = document.querySelector('canvas');
-    return {
-      drawingBuffer: canvas
-        ? { width: canvas.width, height: canvas.height }
-        : null,
-      game: window.__BABYLON_GAME_DIAGNOSTICS__ ?? null,
-    };
-  });
-
   const ok = alphaPixels > 256 && (variance > 8 || colors.size > 3);
   return {
     ok,
     reason: ok ? 'nonblank' : 'low-variance',
     rect,
-    drawingBuffer: diagnostics.drawingBuffer,
+    drawingBuffer: layout.drawingBuffer,
     alphaPixels,
     variance,
     colorBuckets: colors.size,
     metrics: computePixelMetrics(png),
-    renderBudget: checkRenderBudget(diagnostics.game, mode),
-    diagnostics: diagnostics.game,
+    renderBudget: checkRenderBudget(layout.game, mode),
+    diagnostics: layout.game,
   };
+}
+
+function recordError(list, report, countField, text) {
+  report[countField] += 1;
+  const message = text.length > MAX_ERROR_LENGTH ? `${text.slice(0, MAX_ERROR_LENGTH)}…` : text;
+  if (list.length < MAX_ERRORS && !list.includes(message)) list.push(message);
+}
+
+export async function inspectPage(page, args) {
+  const consoleErrors = [];
+  const pageErrors = [];
+  const mode = args.mobile ? 'mobile' : 'desktop';
+  const baseName = args.state ? `${mode}-${args.state}` : mode;
+  const report = {
+    url: args.url,
+    mode,
+    state: null,
+    requestedState: args.state ?? null,
+    appliedState: null,
+    runId: args.runId ?? null,
+    seed: args.seed ?? null,
+    screenshotPath: null,
+    gpu: null,
+    result: null,
+    consoleErrors,
+    pageErrors,
+    consoleErrorCount: 0,
+    pageErrorCount: 0,
+  };
+
+  page.on('console', (message) => {
+    if (message.type() === 'error') recordError(consoleErrors, report, 'consoleErrorCount', message.text());
+  });
+  page.on('pageerror', (error) => recordError(pageErrors, report, 'pageErrorCount', error.message));
+
+  try {
+    await page.goto(args.url, { waitUntil: 'load' });
+    await page.waitForSelector('canvas', { state: 'visible', timeout: 10_000 });
+    const applied = await prepareCapture(page, { ...args, wait: settleWait(args.wait, args.state) });
+    report.state = applied.appliedState;
+    report.appliedState = applied.appliedState;
+    report.gpu = await readGpuInfo(page);
+    const screenshotPath = args.screenshotPath ?? path.join(args.out, `${baseName}.png`);
+    report.result = await captureCanvas(page, mode, screenshotPath);
+    report.screenshotPath = screenshotPath;
+
+    if (report.gpu.softwareRendered) {
+      console.error(
+        `warning: this run rasterized on ${report.gpu.renderer} (software). Pixel and budget ` +
+          'checks remain valid; any FPS or frame-time reading from it does not.',
+      );
+    }
+  } catch (error) {
+    report.result = { ok: false, reason: 'capture-failed', error: error instanceof Error ? error.message : String(error) };
+  }
+  return report;
+}
+
+function contextOptions(devicesArg, mobile) {
+  return mobile
+    ? { ...devicesArg['iPhone 13'], userAgent: undefined }
+    : { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 };
+}
+
+function reportPassed(report) {
+  return report.result?.ok === true && report.consoleErrorCount === 0 && report.pageErrorCount === 0;
+}
+
+export function summarize(report, reportPath) {
+  const result = report.result ?? {};
+  const parts = [reportPassed(report) ? 'PASS' : 'FAIL', report.mode, report.requestedState ?? 'current-view'];
+  if (report.runId) parts.push(`run=${report.runId}`);
+  if (!result.ok) {
+    parts.push(`reason=${result.reason}`);
+    if (result.error) parts.push(`error=${JSON.stringify(result.error.slice(0, 300))}`);
+  }
+  if (report.gpu?.renderer) parts.push(report.gpu.softwareRendered ? 'gpu=SOFTWARE(fps-invalid)' : 'gpu=hardware');
+  const metrics = result.metrics;
+  if (metrics) {
+    parts.push(`entropy=${metrics.colorEntropyBits} edges=${metrics.edgeDensity} ` +
+      `contrast=${metrics.luminance.contrast} dominant=${metrics.dominantColorShare}`);
+  }
+  if (result.renderBudget) {
+    const over = result.renderBudget.rows.filter((row) => row.ok === false)
+      .map((row) => `${row.metric}:${row.actual}>${row.limit}`);
+    parts.push(over.length ? `over-budget=${over.join(',')}` : 'budget=ok');
+  }
+  for (const [field, count] of [['consoleErrors', 'consoleErrorCount'], ['pageErrors', 'pageErrorCount']]) {
+    if (report[count] > 0) {
+      parts.push(`${field}=${report[count]} first=${JSON.stringify(report[field][0].slice(0, 200))}`);
+    }
+  }
+  parts.push(`report=${reportPath}`);
+  if (report.screenshotPath) parts.push(`png=${report.screenshotPath}`);
+  return parts.join(' ');
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  await mkdir(args.out, { recursive: true });
+  if (args.help) {
+    console.log(USAGE);
+    return;
+  }
+  const mode = args.mobile ? 'mobile' : 'desktop';
+  const captures = args.manifest
+    ? readManifestCaptures(JSON.parse(await readFile(args.manifest, 'utf8')))
+    : [{ mobile: args.mobile, state: args.state, runId: args.runId,
+      reportPath: path.join(args.out, `${args.state ? `${mode}-${args.state}` : mode}.json`) }];
 
   const browser = await launchBrowser();
-  const context = await browser.newContext(args.mobile
-    ? { ...devices['iPhone 13'], userAgent: undefined }
-    : { viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
-  const page = await context.newPage();
-  const consoleErrors = [];
-  const pageErrors = [];
-
-  page.on('console', (message) => {
-    if (message.type() === 'error') consoleErrors.push(message.text());
-  });
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-
-  await page.goto(args.url, { waitUntil: 'networkidle' });
-  await page.waitForSelector('canvas', { state: 'visible', timeout: 10_000 });
-
-  if (args.state || args.seed !== undefined) {
-    const applied = await page.evaluate(({ seed, state }) => {
-      const hooks = window.__BABYLON_GAME_TEST_HOOKS__;
-      if (!hooks) return false;
-      if (typeof seed === 'number') hooks.seed?.(seed);
-      if (state) hooks.setState?.(state);
-      return true;
-    }, { seed: args.seed, state: args.state });
-    if (!applied) {
-      console.error(
-        'warning: --state/--seed requested but __BABYLON_GAME_TEST_HOOKS__ is not defined; capturing the current state instead',
-      );
+  const reports = [];
+  try {
+    for (const capture of captures) {
+      const context = await browser.newContext(contextOptions(devices, capture.mobile));
+      let report;
+      try {
+        report = await inspectPage(await context.newPage(), { ...args, ...capture });
+      } finally {
+        await context.close();
+      }
+      await mkdir(path.dirname(capture.reportPath), { recursive: true });
+      await writeFile(capture.reportPath, `${JSON.stringify(report, null, 2)}\n`);
+      reports.push(report);
+      if (!args.json) console.log(summarize(report, capture.reportPath));
+      if (!reportPassed(report)) process.exitCode = 1;
     }
+  } finally {
+    await browser.close();
   }
-
-  await page.waitForTimeout(args.wait);
-
-  const mode = args.mobile ? 'mobile' : 'desktop';
-  const baseName = args.state ? `${mode}-${args.state}` : mode;
-  const gpu = await readGpuInfo(page);
-  const result = await sampleCanvas(page, mode);
-  const screenshotPath = path.join(args.out, `${baseName}.png`);
-  await page.screenshot({ path: screenshotPath, fullPage: true });
-
-  if (gpu.softwareRendered) {
-    console.error(
-      `warning: this run rasterized on ${gpu.renderer} (software). Pixel and budget ` +
-        'checks remain valid; any FPS or frame-time reading from it does not.',
-    );
-  }
-
-  const report = {
-    url: args.url,
-    mode,
-    state: args.state,
-    seed: args.seed ?? null,
-    screenshotPath,
-    gpu,
-    result,
-    consoleErrors,
-    pageErrors,
-  };
-
-  await writeFile(path.join(args.out, `${baseName}.json`), `${JSON.stringify(report, null, 2)}\n`);
-  await browser.close();
-
-  console.log(JSON.stringify(report, null, 2));
-
-  if (!result.ok || consoleErrors.length > 0 || pageErrors.length > 0) {
-    process.exit(1);
-  }
+  if (args.json) console.log(JSON.stringify(args.manifest ? reports : reports[0], null, 2));
 }
 
 main().catch((error) => {
   console.error(error);
-  process.exit(1);
+  process.exitCode = 1;
 });

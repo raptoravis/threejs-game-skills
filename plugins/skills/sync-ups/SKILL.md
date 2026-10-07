@@ -74,18 +74,22 @@ Three.js skill that changed, diff it against its Phaser mirror and port
 1. **SKILL.md path resolution** — `<this-skill-dir>` placeholder + Skill Path
    Ladder (5 levels, with `plugins/skills/<skill>` as the repo-source rung).
 2. **Director architecture** — Runner Capability Check, Sibling Skill Loading,
-   Reference Gate, the 4-ledger model, and `phase-playbook.md` naming.
+   Reference Gate, the 4-ledger model, and the current director references
+   (`asset-recovery.md`, `evidence-manifest.md`, `workflow-evaluations.md`;
+   `phase-playbook.md` was the pre-8286774 name).
 3. **Reference loading gates** — any new `Load references/<file>.md before...`
    line in a Three.js SKILL.md → add the 2D-equivalent gate, and create the 2D
    reference file if it does not exist (translate 3D examples to Phaser/2D).
 4. **Genre checklists** — ensure every local-only genre checklist still covers
    the universal cross-cutting sections the Three.js genre checklists expect
    (Performance, Mobile, Playtest, Accessibility, Audio, HUD).
-5. **Scripts** — `probe_asset_credentials.sh` is engine-agnostic: keep it
-   byte-identical with the Three.js version. `audit_reference_report.py` mirrors
-   the Three.js structure but uses the 2D scorecard categories and image/audio
-   (not 3D) markers. `inspect-phaser-canvas.mjs` mirrors the pixel-metrics block
-   of `inspect-threejs-canvas.mjs`.
+5. **Scripts** — `probe_asset_credentials.sh` and `check_evidence.py` are
+   engine-agnostic: keep them byte-identical with the Three.js version (only the
+   engine name and the `inspect-*-canvas.mjs` reference change). `audit_reference_report.py`
+   mirrors the Three.js structure but uses the 2D scorecard categories and
+   image/audio (not 3D) markers. `inspect-phaser-canvas.mjs` mirrors the
+   manifest/state/run-id machinery and pixel-metrics block of
+   `inspect-threejs-canvas.mjs`.
 
 Always preserve Phaser/2D-specific content (Matter.js/Arcade, scene lifecycle,
 FIT scaling, sprite/tilemap/parallax, texture atlases, object pooling). Port the
@@ -154,7 +158,8 @@ and diffs it against the manifest:
 ## Rename handling (the one manual step)
 
 Git rename detection across the upstream/fork void is heuristic. When upstream
-renames a file (e.g. `director-phase-os.md` → `phase-playbook.md`):
+renames a file (for example, `director-phase-os.md` → `phase-playbook.md` in an
+earlier sync):
 
 - The engine adds the new file (`phase-playbook.md`) and leaves the old local
   copy (`director-phase-os.md`) in place — it is local-only from the engine's

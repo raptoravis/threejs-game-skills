@@ -51,6 +51,7 @@ bash <director-skill-dir>/scripts/probe_asset_credentials.sh
 - For premium hero surfaces (player sprite, enemy/boss sprites, signature props, background plates, logo/icon/GUI art), procedural-only is not an allowed final answer without real blocker evidence: a `MISSING` probe line, or an attempted generation command plus its API/network/quota error. Otherwise at least one high-value surface must show an image generator output path, sprite sheet, or documented hybrid chain.
 - For premium active gameplay, missing audio is a reported gap unless the user asked for silent/offline output or the audio key/API is blocked.
 - Fill the external asset sourcing ledger before the graphics phase. The ledger template and the allowed skip reasons live in `references/phase-playbook.md`.
+- Read `references/asset-recovery.md` when sourcing external assets or recovering a job; it classifies each failure and says when a local fallback is allowed. Continue independent work meanwhile.
 
 ## Reference Gate
 
@@ -88,8 +89,11 @@ New projects use the gameplay skill's scaffold creator; canvas verification uses
 
 ```bash
 python3 <phaser-gameplay-systems-skill-dir>/scripts/create_phaser_game.py ./my-game
-node <phaser-qa-release-skill-dir>/scripts/inspect-phaser-canvas.mjs --url http://127.0.0.1:5288
+node <phaser-qa-release-skill-dir>/scripts/inspect-phaser-canvas.mjs --manifest artifacts/evidence.json --url http://127.0.0.1:5288
+python3 <director-skill-dir>/scripts/check_evidence.py ./my-game --manifest artifacts/evidence.json
 ```
+
+Before capturing, read `references/evidence-manifest.md` and declare the expected viewport/state pairs for this pass. The checker verifies only that set and its run ID, establishing artifact coverage rather than aesthetic quality or gameplay correctness.
 
 ## Premium Completion Rule
 
