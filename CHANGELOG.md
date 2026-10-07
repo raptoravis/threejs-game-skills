@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.0
+
+- **Upstream sync** (e5f301d → 8286774): catch up to the real current upstream — Claude Opus 5.5 skill tuning, QA token-cost reduction (manifest/evidence `check_evidence.py` and inspector), and music-generation scope for the audio generator. Completes the 1.5.0 sync, which had stopped at the intermediate e5f301d.
+- **Re-applied local features**: `~/.env` auto-loading and multi-provider image generation preserved on the synced files.
+
 ## 1.5.0
 
 - **Upstream sync** (7221c1f → e5f301d): Three.js skills synced forward — new reference files (`authoring-recipes.md`, `debug-playbook.md`, `genre-design.md`, `release-checks.md`, `asset-recovery.md`, `evidence-manifest.md`, `workflow-evaluations.md`) and a new `check_evidence.py` evidence-audit script (replacing `audit_reference_report.py`). Upstream consolidated its checklists and prompt-template references into these files.
