@@ -46,7 +46,7 @@ Route game requests by engine based on genre and user intent:
 - In Claude-style skill runners, do not assume a director skill can literally invoke other skills. The director must attempt to load sibling public `SKILL.md` files first, report a skill-loading ledger, and use the bundled phase OS only for files that cannot be loaded.
 - For broad/premium director work, the director must load each phase's required `references/*.md` files at phase entry and report a reference ledger. A phase is not done if its required references were skipped.
 - Premium/AAA/showcase claims must include the filled visual scorecard from `plugins/skills/threejs-aaa-graphics-builder/references/visual-scorecard.md`, including average score and automatic failures remaining. Do not substitute an improvised rubric.
-- When shell tools are available, run `plugins/skills/threejs-game-director/scripts/audit_reference_report.py --premium <report.md>` against the final evidence report before claiming premium, AAA, showcase, complete, release-ready, or "less basic" success.
+- When shell tools are available, run `plugins/skills/threejs-game-director/scripts/check_evidence.py ./my-game --manifest artifacts/evidence.json` (or `--report artifacts/final-evidence.md`) against the final evidence before claiming premium, AAA, showcase, complete, release-ready, or "less basic" success.
 - Build a playable loop first. A static scene is not done.
 - Do not stop at first playable slice when the user asked for premium, AAA, polished, complete, release-ready, or showcase quality.
 - Keep scene setup, loop, input, systems, entities, UI, assets, and debug tools separated once the prototype grows beyond a single simple file.
@@ -75,7 +75,7 @@ Route game requests by engine based on genre and user intent:
 - In Claude-style skill runners, the director must attempt to load sibling public `SKILL.md` files first, report a skill-loading ledger, and use the bundled phase OS only for files that cannot be loaded.
 - For broad/premium director work, the director must load each phase's required `references/*.md` files at phase entry and report a reference ledger.
 - Premium/showcase 2D claims must include the filled 2D visual scorecard from `plugins/skills/phaser-2d-graphics-builder/references/visual-scorecard.md`, including average score and automatic failures remaining.
-- When shell tools are available, run `plugins/skills/phaser-game-director/scripts/audit_reference_report.py --premium <report.md>` against the final evidence report.
+- When shell tools are available, run `plugins/skills/phaser-game-director/scripts/check_evidence.py ./my-game --manifest artifacts/evidence.json` against the final evidence report.
 - Build a playable loop first. A static scene is not done.
 - Keep Boot/Game/UI scene separation from the first prototype.
 - Tune movement, physics, camera, collision, feedback, and HUD through short playtest loops.
@@ -157,7 +157,7 @@ Use the scaffold's `npm run verify:visual` and `npm run inspect:canvas` when ava
 - In Claude-style skill runners, the director must attempt to load sibling public `SKILL.md` files first, report a skill-loading ledger, and use the bundled phase OS only for files that cannot be loaded.
 - For broad/premium director work, the director must load each phase's required `references/*.md` files at phase entry and report a reference ledger.
 - Premium/AAA/showcase claims must include the filled visual scorecard from `plugins/skills/babylon-aaa-graphics-builder/references/visual-scorecard.md`.
-- When shell tools are available, run `plugins/skills/babylon-game-director/scripts/audit_reference_report.py --premium <report.md>`.
+- When shell tools are available, run `plugins/skills/babylon-game-director/scripts/check_evidence.py ./my-game --manifest artifacts/evidence.json`.
 - Build a playable loop first. A static scene is not done.
 - Keep Engine, Scene, systems, entities, UI, assets, and debug tools separated.
 - Tune movement, camera, collisions, feedback, and HUD through short playtest loops.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that a Phaser 2D game report's evidence actually exists on disk.
+"""Verify that a Phaser game report's evidence actually exists on disk.
 
 Manifest mode checks a declared capture set from one run. Legacy report mode
 checks cited files and discovered inspector reports; it cannot establish capture
@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import shlex
 import sys
@@ -141,22 +140,12 @@ def check_artifacts(paths: list[str], roots: list[Path], *, allow_cwd: bool = Tr
     return confirmed, failures
 
 
-PRUNED_DIRS = {"node_modules", ".git", "dist", ".vite", "test-results", "playwright-report"}
-
-
-def _project_json_files(project: Path):
-    """Walk the project without descending into dependency or build output trees."""
-    for root, dirs, files in os.walk(project):
-        dirs[:] = [name for name in dirs if name not in PRUNED_DIRS]
-        for name in files:
-            if name.endswith(".json") and name != "package-lock.json":
-                yield Path(root) / name
-
-
 def find_inspector_reports(project: Path) -> list[Path]:
     """JSON files written by inspect-phaser-canvas.mjs, wherever they landed."""
     found: list[Path] = []
-    for path in _project_json_files(project):
+    for path in project.rglob("*.json"):
+        if "node_modules" in path.parts or path.name == "package-lock.json":
+            continue
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError, UnicodeDecodeError):
@@ -297,7 +286,7 @@ def check_build(project: Path) -> tuple[list[str], list[str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Verify a Phaser 2D game report's cited evidence exists on disk."
+        description="Verify a Phaser game report's cited evidence exists on disk."
     )
     parser.add_argument("project", help="game project directory")
     parser.add_argument("--manifest", help="version 1 JSON capture manifest, relative to the project or absolute")

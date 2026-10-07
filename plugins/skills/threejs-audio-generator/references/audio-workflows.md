@@ -13,12 +13,14 @@ Create an audio matrix before generating files:
 | Interaction | pickup, hit, shield, score, checkpoint | 4-12 | no | sfx |
 | Threat | enemy attack, warning, impact, boss cue | 4-12 | no | sfx |
 | Ambience | room tone, wind, engines, crowd, weather | 1-4 | yes | ambience |
-| Music | menu, gameplay, boss, win/lose stingers | 1-5 | tracks yes, stingers no | music |
 | Voice | announcer, boss, tutorial, combat barks | optional | no | voice |
 
-For a first premium pass, fill the rows the game's events actually produce — typically an ambience loop, the core UI actions, and each primary gameplay event.
+For a first premium pass, generate at least:
 
-Music and voice are optional; add a gameplay loop when the genre and pacing benefit from a score, and voice when the design benefits from dialogue or callouts. An explicit no-music or silent brief wins.
+- 1 ambience loop.
+- 3 UI sounds.
+- 5 gameplay SFX tied to real events.
+- Optional voice only if the design benefits from dialogue or callouts.
 
 ## Prompting
 
@@ -45,18 +47,6 @@ Avoid prompts that are only mood words (`epic`, `AAA`, `cool`). Name the gamepla
 - Generate variants for high-frequency events to avoid repetition.
 - Normalize in the game through volume groups, not by editing every file manually during early iteration.
 
-## Music Strategy
-
-Music prompts name genre, tempo (BPM), key instrumentation, energy curve, and the game moment: `tense orchestral boss theme, 140 BPM, low brass ostinato, taiko hits, relentless energy, no intro, loopable, instrumental`. Use `--instrumental` unless the user wants vocals, since vocals compete with SFX and dialogue.
-
-- Gameplay and menu loops: 30–90s. Ask for constant energy with no intro, outro, or fade so the ends meet; the API has no loop flag.
-- Stingers (victory, defeat, level-up, boss reveal): 3–8s, not looped.
-- Sectioned tracks (intro → loop → outro, calm → combat): write a `composition_plan` JSON with global styles and sections, and pass it with `--plan`. Plans also accept `--seed` for reproducible regeneration.
-- Intensity layers (explore → combat): generate matching variants from the same prompt with one changed energy term, then crossfade them from game state.
-- Keep the music group below SFX in the mix; duck it under dialogue, and during hitstop or big impacts.
-
-Listen to the loop seam in game before generating variants. If it clicks or jumps, set `loopStart`/`loopEnd` on beat boundaries, or crossfade two sources, rather than regenerating blindly.
-
 ## Voice Strategy
 
 Use TTS when the line can be generated from text and exact acting is less important.
@@ -78,7 +68,7 @@ Use a small audio manager instead of ad hoc `new Audio()` calls once a game has 
 - Load sounds after user gesture unlock.
 - Maintain groups: `master`, `sfx`, `ui`, `ambience`, `voice`, `music`.
 - Expose mute and per-group volume.
-- Loop ambience and music through `AudioBufferSourceNode` (`loop = true`, with `loopStart`/`loopEnd` for music) or a library wrapper that handles loop restarts. Crossfade music tracks with two gains rather than hard-cutting.
+- Loop ambience through `AudioBufferSourceNode` or a library wrapper that handles loop restarts.
 - Stop/dispose old sources when restarting scenes.
 - Do not trigger the same high-volume SFX every frame; add cooldowns or variant pools.
 - Pause/resume audio with the game pause state and page visibility.
@@ -115,4 +105,4 @@ class GameAudio {
 
 ## Runtime failure modes
 
-Ambience or music loops stacking after a pause or restart · audible clicks at a music loop seam · music masking gameplay SFX · autoplay blocked because nothing unlocked the context from a user gesture · mute or volume reaching only some groups · decode/load errors swallowed silently · mobile Safari needing its own unlock path.
+Ambience loops stacking after a pause or restart · autoplay blocked because nothing unlocked the context from a user gesture · mute or volume reaching only some groups · decode/load errors swallowed silently · mobile Safari needing its own unlock path.

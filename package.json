@@ -1,6 +1,6 @@
 {
   "name": "threejs-game-skills",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "main": ".opencode/plugins/threejs-game-skills-plugin.js",
   "exports": {
     ".": ".opencode/plugins/threejs-game-skills-plugin.js",
@@ -23,7 +23,7 @@
   ],
   "type": "module",
   "scripts": {
-    "check:scripts": "bash -n install.sh scripts/validate-skills.sh plugins/skills/threejs-game-director/scripts/probe_asset_credentials.sh && node --check plugins/skills/threejs-qa-release/scripts/inspect-threejs-canvas.mjs && python3 scripts/check-python-syntax.py scripts/check-python-syntax.py plugins/skills/threejs-gameplay-systems/scripts/create_threejs_game.py plugins/skills/threejs-3d-generator/scripts/threejs_3d_asset.py plugins/skills/threejs-image-generator/scripts/generate_image.py plugins/skills/threejs-audio-generator/scripts/threejs_audio_asset.py plugins/skills/threejs-game-director/scripts/audit_reference_report.py",
+    "check:scripts": "bash -n install.sh scripts/validate-skills.sh plugins/skills/threejs-game-director/scripts/probe_asset_credentials.sh && node --check plugins/skills/threejs-qa-release/scripts/inspect-threejs-canvas.mjs && python3 scripts/check-python-syntax.py scripts/check-python-syntax.py plugins/skills/threejs-gameplay-systems/scripts/create_threejs_game.py plugins/skills/threejs-3d-generator/scripts/threejs_3d_asset.py plugins/skills/threejs-image-generator/scripts/generate_image.py plugins/skills/threejs-audio-generator/scripts/threejs_audio_asset.py plugins/skills/threejs-game-director/scripts/check_evidence.py",
     "validate:skills": "scripts/validate-skills.sh plugins/skills",
     "install:codex": "./install.sh --codex",
     "install:claude": "./install.sh --claude",

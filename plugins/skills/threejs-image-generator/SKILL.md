@@ -21,29 +21,39 @@ For premium graphics work with generation in scope, generate the high-value 2D s
 
 ## API keys & providers
 
-The script auto-loads `~/.env` and discovers providers from `*_IMAGEGEN_MODEL` env vars. Each provider needs a `{PREFIX}_API_KEY` + `{PREFIX}_IMAGEGEN_MODEL` pair; priority follows `~/.env` declaration order (first declared wins), and the next provider is tried automatically on quota/error. Keys never go in skill files, game code, or reports.
+The script auto-loads `~/.env` on startup and discovers providers from `*_IMAGEGEN_MODEL` env vars. Priority follows declaration order in `~/.env` — the first declared provider wins; if it fails (quota or error), the next provider is tried automatically. Keys never go in skill files, game code, or reports.
+
+### Multi-provider setup (~/.env)
 
 ```bash
-# ~/.env — first declared provider is primary
+# ARK / Volcengine (ByteDance) — declared first → used by default
 ARK_API_KEY=ark-…
 ARK_IMAGEGEN_MODEL=doubao-seedream-5-0-pro-260628
+
+# Dashscope (Alibaba)
 DASHSCOPE_API_KEY=sk-…
 DASHSCOPE_IMAGEGEN_MODEL=qwen-image2-pro
-GEMINI_API_KEY=…   # legacy; standalone Gemini fallback
+
+# Gemini (Google) — legacy; also works standalone with GEMINI_API_KEY
+GEMINI_API_KEY=…
 ```
 
-Supported backends: `ARK` (火山引擎方舟 / Seedream, native HTTP), `DASHSCOPE` and other OpenAI-compatible providers (Images API), and `GEMINI` (native genai, `gemini-3-pro-image-preview`).
+Supported backends: ARK/Doubao Seedream (native HTTP), Google Gemini (native), and any OpenAI-compatible Images API (Dashscope, etc.). Optional `{PREFIX}_BASE_URL` overrides the auto-inferred OpenAI-compatible endpoint.
+
+### Override at runtime
+
+- `--provider ARK` — force a specific provider, ignoring priority order and fallback.
+- `--api-key sk-…` — override the active provider's API key.
+
+### Credential probe
+
+Step 0, before declaring any provider unavailable: run this skill's own probe and paste its literal output into the report.
 
 ```bash
 uv run <this-skill-dir>/scripts/generate_image.py probe
-# Found N image generation provider(s):
-#   → [ARK] model=…  (from …)
-# Active provider: [ARK] …
 ```
 
-Force a provider (skips fallback): `--provider ARK` / `--provider GEMINI`. Override the active key with `--api-key sk-…`.
-
-Keys defined only in a shell profile can be absent from the process env. If the probe prints MISSING unexpectedly, use `threejs-game-director/scripts/probe_asset_credentials.sh`, which sources the profile and probes all providers at once.
+Keys defined only in a shell profile can be absent from the process env. If the plain probe unexpectedly prints MISSING, use `threejs-game-director/scripts/probe_asset_credentials.sh`, which sources the profile and probes all providers.
 
 ## Commands
 
@@ -59,7 +69,7 @@ uv run <this-skill-dir>/scripts/generate_image.py \
   --filename assets/concepts/ship-red-livery.png --resolution 2K
 ```
 
-Resolution: `1K` for quick concepts, icons, and draft sheets · `2K` (the default) for production references, image-to-3D, textures, backgrounds, UI panels · `4K` for hero splash art, high-detail texture references, and large sky plates. Force a specific provider with `--provider ARK` (skips priority order and fallback).
+Resolution: `1K` for quick concepts, icons, and draft sheets · `2K` (the default) for production references, image-to-3D, textures, backgrounds, UI panels · `4K` for hero splash art, high-detail texture references, and large sky plates.
 
 ## Prompt patterns
 
@@ -92,4 +102,4 @@ For coordinated games use the director's `references/asset-recovery.md`. Missing
 
 ## Report
 
-Prompt and purpose, output path, resolution, active provider and whether fallback occurred, whether it was used directly, edited further, or handed to `threejs-3d-generator`, and any remaining work such as compression, UV assignment, alpha cleanup, or atlas packing.
+Credential probe output, active provider and whether fallback occurred, prompt and purpose, output path, resolution, whether it was used directly, edited further, or handed to `threejs-3d-generator`, and any remaining work such as compression, UV assignment, alpha cleanup, or atlas packing.
